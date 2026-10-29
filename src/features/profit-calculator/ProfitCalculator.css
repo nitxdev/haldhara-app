@@ -1,0 +1,26 @@
+﻿.profit-page{max-width:1100px;margin:auto;padding:28px;color:#26392c}
+.profit-header{margin-bottom:22px}
+.profit-eyebrow{font-size:11px;font-weight:800;letter-spacing:1.5px;color:#59805a}
+.profit-header h1{font-size:clamp(25px,3vw,34px);margin:9px 0}
+.profit-header p,.profit-muted{font-size:13px;color:#788277;line-height:1.6}
+.profit-notice{padding:15px;background:#fff8e6;border:1px solid #ead9a6;border-radius:12px;font-size:13px;line-height:1.7;color:#765d1d;margin-bottom:20px}
+.profit-card{padding:22px;border:1px solid #e4e9df;border-radius:15px;background:#fffdf8;margin-bottom:18px}
+.profit-card h2{font-size:19px;margin:0 0 15px}
+.profit-card>p{font-size:14px;line-height:1.7}
+.profit-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+.profit-fields label{display:grid;gap:8px;font-size:13px;font-weight:700}
+.profit-fields input,.profit-fields select{width:100%;box-sizing:border-box;padding:12px;border:1px solid #dce4d9;border-radius:9px;background:white;color:#26392c;font:inherit}
+.profit-results{margin-bottom:20px;border-radius:16px;overflow:hidden;border:1px solid #e2e8dc}
+.profit-result-main{padding:23px;background:#edf3e8;display:grid;gap:9px}
+.profit-result-main>span{font-size:10px;letter-spacing:1.2px;font-weight:800;color:#657a60}
+.profit-result-main>strong{font-size:clamp(28px,4vw,38px);overflow-wrap:anywhere}
+.profit-positive{color:#287245}
+.profit-negative{color:#b44737}
+.profit-result-main p{font-size:12px;color:#788277;margin:0}
+.profit-result-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:#e5e9e0}
+.profit-result-grid article{background:#fffdf8;padding:17px;display:grid;gap:9px;min-width:0}
+.profit-result-grid span{font-size:11px;line-height:1.5;color:#788277}
+.profit-result-grid strong{font-size:16px;overflow-wrap:anywhere}
+.profit-footnote{font-size:11px;color:#899187;line-height:1.7}
+@media(max-width:700px){.profit-page{padding:16px}.profit-card{padding:17px}.profit-result-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.profit-fields{grid-template-columns:1fr}}

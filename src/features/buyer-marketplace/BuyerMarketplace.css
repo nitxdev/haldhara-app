@@ -1,0 +1,96 @@
+﻿.buyer-marketplace {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 24px;
+  color: #203b2b;
+}
+.buyer-marketplace-header { margin-bottom: 26px; }
+.buyer-marketplace-eyebrow {
+  color: #527b55;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+.buyer-marketplace-header h1 { margin: 10px 0 8px; font-size: clamp(28px, 4vw, 40px); }
+.buyer-marketplace-header p { color: #6f7c70; }
+.buyer-marketplace-header input {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 560px;
+  margin-top: 12px;
+  padding: 14px 16px;
+  border: 1px solid #dce3d6;
+  border-radius: 12px;
+  background: #fffdf7;
+  color: #203b2b;
+  font: inherit;
+}
+.buyer-marketplace-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+.buyer-crop-card {
+  overflow: hidden;
+  border: 1px solid #e2e8dd;
+  border-radius: 18px;
+  background: #fffdf7;
+  box-shadow: 0 8px 24px #203b2b0a;
+}
+.buyer-crop-image, .buyer-crop-placeholder {
+  display: flex;
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+  align-items: center;
+  justify-content: center;
+  background: #edf2e6;
+}
+.buyer-crop-placeholder { font-size: 48px; }
+.buyer-crop-content { padding: 18px; }
+.buyer-crop-title-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.buyer-crop-title-row h2 { margin: 0; font-size: 21px; }
+.buyer-crop-status {
+  border-radius: 20px;
+  padding: 5px 9px;
+  background: #e4f2e6;
+  color: #286744;
+  font-size: 11px;
+  font-weight: 700;
+}
+.buyer-crop-location, .buyer-crop-quantity { color: #657365; font-size: 14px; }
+.buyer-crop-price { margin: 14px 0; font-size: 25px; font-weight: 800; }
+.buyer-crop-price span { margin-left: 5px; color: #6f7c70; font-size: 13px; font-weight: 400; }
+.buyer-crop-description { overflow-wrap: anywhere; color: #536254; }
+.buyer-crop-content small { color: #7a8478; }
+.buyer-marketplace-empty { padding: 26px; border: 1px solid #e2e8dd; border-radius: 16px; }
+@media (max-width: 560px) {
+  .buyer-marketplace { padding: 22px 14px; }
+  .buyer-marketplace-grid { grid-template-columns: 1fr; }
+}
+
+.buyer-marketplace-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 18px 0 24px;
+}
+.buyer-marketplace-filters label {
+  display: grid;
+  gap: 6px;
+  min-width: 150px;
+  color: #536254;
+  font-size: 13px;
+  font-weight: 650;
+}
+.buyer-marketplace-filters input,
+.buyer-marketplace-filters select {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #dce3d6;
+  border-radius: 10px;
+  background: #fffdf7;
+  color: #203b2b;
+  font: inherit;
+}

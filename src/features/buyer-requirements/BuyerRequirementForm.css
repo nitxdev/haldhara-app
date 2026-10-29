@@ -1,0 +1,54 @@
+﻿.buyer-requirement-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 30px 24px;
+  color: #203b2b;
+}
+.buyer-requirement-page h1 { margin: 10px 0; font-size: clamp(28px, 4vw, 38px); }
+.buyer-requirement-page header p { color: #6f7c70; }
+.buyer-requirement-eyebrow {
+  color: #527b55;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+.buyer-requirement-form {
+  display: grid;
+  gap: 18px;
+  padding: 24px;
+  border: 1px solid #e2e8dd;
+  border-radius: 18px;
+  background: #fffdf7;
+}
+.buyer-requirement-form label { display: grid; gap: 8px; font-size: 14px; font-weight: 650; }
+.buyer-requirement-form input,
+.buyer-requirement-form select,
+.buyer-requirement-form textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #dce3d6;
+  border-radius: 10px;
+  background: white;
+  color: #203b2b;
+  font: inherit;
+}
+.buyer-requirement-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.buyer-requirement-actions { display: flex; justify-content: flex-end; gap: 12px; }
+.buyer-requirement-submit, .buyer-requirement-cancel {
+  padding: 13px 18px;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+.buyer-requirement-submit { border: 0; background: #286744; color: white; }
+.buyer-requirement-submit:disabled { opacity: .65; cursor: wait; }
+.buyer-requirement-cancel { border: 1px solid #dce3d6; background: white; color: #203b2b; }
+.buyer-requirement-message { color: #286744; }
+@media (max-width: 560px) {
+  .buyer-requirement-page { padding: 22px 14px; }
+  .buyer-requirement-form { padding: 18px; }
+  .buyer-requirement-row { grid-template-columns: 1fr; }
+  .buyer-requirement-actions { flex-direction: column; }
+}

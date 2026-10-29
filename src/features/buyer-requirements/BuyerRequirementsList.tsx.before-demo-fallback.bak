@@ -1,0 +1,151 @@
+﻿import { useEffect, useMemo, useState } from "react";
+import "./BuyerRequirementsList.css";
+
+type Requirement = {
+  _id: string;
+  cropName: string;
+  quantityKg: number;
+  targetPricePerKg: number;
+  deliveryLocation: string;
+  requiredBy: string;
+  notes?: string;
+  status?: string;
+};
+
+const API = "http://localhost:5001/api/buyer-requirements";
+
+export default function BuyerRequirementsList() {
+  const [items, setItems] = useState<Requirement[]>([]);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("newest");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadRequirements() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await fetch(API, { signal: controller.signal });
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || "Requirements load nahi ho paayi.");
+        }
+
+        const rows = Array.isArray(result)
+          ? result
+          : result.data ?? result.requirements ?? [];
+
+        setItems(rows);
+      } catch (err) {
+        if (err instanceof Error && err.name !== "AbortError") {
+          setError(err.message || "Server se connect nahi ho paaya.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadRequirements();
+    return () => controller.abort();
+  }, []);
+
+  const filtered = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    return items
+      .filter((item) =>
+        `${item.cropName} ${item.deliveryLocation} ${item.notes ?? ""}`
+          .toLowerCase()
+          .includes(query)
+      )
+      .sort((a, b) => {
+        if (sort === "price-high") {
+          return b.targetPricePerKg - a.targetPricePerKg;
+        }
+        if (sort === "price-low") {
+          return a.targetPricePerKg - b.targetPricePerKg;
+        }
+        if (sort === "quantity-high") {
+          return b.quantityKg - a.quantityKg;
+        }
+        return new Date(b.requiredBy).getTime() -
+          new Date(a.requiredBy).getTime();
+      });
+  }, [items, search, sort]);
+
+  return (
+    <section className="buyer-req-page">
+      <div className="buyer-req-heading">
+        <div>
+          <span className="buyer-req-eyebrow">HALDHARA MARKETPLACE</span>
+          <h1>Buyer Requirements</h1>
+          <p>Buyers ki demand dekho aur apni fasal ke liye sahi opportunity dhoondo.</p>
+        </div>
+        <span className="buyer-req-count">{filtered.length} demands</span>
+      </div>
+
+      <div className="buyer-req-toolbar">
+        <input
+          aria-label="Search crop or location"
+          placeholder="Search crop or delivery location..."
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+        />
+        <select
+          aria-label="Sort requirements"
+          value={sort}
+          onChange={(event) => setSort(event.target.value)}
+        >
+          <option value="newest">Deadline: latest first</option>
+          <option value="price-high">Target price: high to low</option>
+          <option value="price-low">Target price: low to high</option>
+          <option value="quantity-high">Quantity: high to low</option>
+        </select>
+      </div>
+
+      {loading && <p className="buyer-req-state">Loading buyer demands...</p>}
+
+      {!loading && error && (
+        <div className="buyer-req-state buyer-req-error">
+          <p>{error}</p>
+          <button onClick={() => window.location.reload()}>Try again</button>
+        </div>
+      )}
+
+      {!loading && !error && filtered.length === 0 && (
+        <div className="buyer-req-empty">
+          <span>🌾</span>
+          <h3>No open requirements found</h3>
+          <p>Try another crop or location. New buyer demands will appear here.</p>
+        </div>
+      )}
+
+      <div className="buyer-req-grid">
+        {filtered.map((item) => (
+          <article className="buyer-req-card" key={item._id}>
+            <div className="buyer-req-card-top">
+              <span className="buyer-req-crop-icon">🌱</span>
+              <span className="buyer-req-open">Open demand</span>
+            </div>
+            <h2>{item.cropName}</h2>
+            <div className="buyer-req-price">
+              ₹{Number(item.targetPricePerKg).toLocaleString("en-IN")}
+              <small>/kg target price</small>
+            </div>
+            <div className="buyer-req-details">
+              <div><span>Quantity needed</span><strong>{Number(item.quantityKg).toLocaleString("en-IN")} kg</strong></div>
+              <div><span>Delivery location</span><strong>{item.deliveryLocation}</strong></div>
+              <div><span>Required by</span><strong>{item.requiredBy ? new Date(item.requiredBy).toLocaleDateString("en-IN") : "Not specified"}</strong></div>
+            </div>
+            {item.notes && <p className="buyer-req-notes">{item.notes}</p>}
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}

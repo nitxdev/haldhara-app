@@ -1,0 +1,146 @@
+﻿import { useState } from "react";
+import "./BookForFeast.css";
+
+type FeastRequest = {
+  id: string;
+  eventName: string;
+  cropName: string;
+  quantityKg: number;
+  budgetPerKg: number;
+  location: string;
+  deliveryDate: string;
+  status: "Open";
+};
+
+export default function BookForFeast() {
+  const [requests, setRequests] = useState<FeastRequest[]>([]);
+  const [form, setForm] = useState({
+    eventName: "",
+    cropName: "Potato",
+    quantityKg: "100",
+    budgetPerKg: "30",
+    location: "",
+    deliveryDate: "",
+  });
+  const [notice, setNotice] = useState("");
+
+  function update(key: keyof typeof form, value: string) {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function submit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const quantityKg = Number(form.quantityKg);
+    const budgetPerKg = Number(form.budgetPerKg);
+
+    if (quantityKg <= 0 || budgetPerKg <= 0) {
+      setNotice("Quantity aur budget zero se zyada hona chahiye.");
+      return;
+    }
+
+    if (new Date(form.deliveryDate) < new Date(new Date().toDateString())) {
+      setNotice("Delivery date aaj ya future mein honi chahiye.");
+      return;
+    }
+
+    const item: FeastRequest = {
+      ...form,
+      id: crypto.randomUUID(),
+      quantityKg,
+      budgetPerKg,
+      status: "Open",
+    };
+
+    setRequests((prev) => [item, ...prev]);
+    setNotice("Demo request add ho gayi. Backend booking abhi connect nahi hai.");
+    setForm((prev) => ({ ...prev, eventName: "", location: "" }));
+  }
+
+  return (
+    <main className="feast-page">
+      <header className="feast-header">
+        <span>HALDHARA MARKETPLACE</span>
+        <h1>Book for Feast</h1>
+        <p>Community feasts, events aur caterers ke liye fresh produce bulk mein source karo.</p>
+      </header>
+
+      <section className="feast-layout">
+        <form className="feast-form" onSubmit={submit}>
+          <h2>Create a bulk requirement</h2>
+
+          <label>Event / organization name
+            <input required maxLength={100} value={form.eventName}
+              onChange={(e) => update("eventName", e.target.value)} placeholder="e.g. Community Feast" />
+          </label>
+
+          <label>Crop
+            <select value={form.cropName} onChange={(e) => update("cropName", e.target.value)}>
+              {["Potato", "Ginger", "Pineapple", "Orange", "Kiwi", "Turmeric", "Rice", "Other"].map((crop) =>
+                <option key={crop}>{crop}</option>
+              )}
+            </select>
+          </label>
+
+          <div className="feast-two-col">
+            <label>Quantity (kg)
+              <input type="number" required min="1" step="1" value={form.quantityKg}
+                onChange={(e) => update("quantityKg", e.target.value)} />
+            </label>
+            <label>Budget (₹/kg)
+              <input type="number" required min="0.01" step="0.01" value={form.budgetPerKg}
+                onChange={(e) => update("budgetPerKg", e.target.value)} />
+            </label>
+          </div>
+
+          <label>Delivery location
+            <input required maxLength={160} value={form.location}
+              onChange={(e) => update("location", e.target.value)} placeholder="Village, town or district" />
+          </label>
+
+          <label>Required delivery date
+            <input type="date" required min={new Date().toLocaleDateString("en-CA")}
+              value={form.deliveryDate} onChange={(e) => update("deliveryDate", e.target.value)} />
+          </label>
+
+          <div className="feast-estimate">
+            <span>Estimated budget</span>
+            <strong>₹{(Math.max(0, Number(form.quantityKg)) * Math.max(0, Number(form.budgetPerKg))).toLocaleString("en-IN")}</strong>
+          </div>
+
+          <button type="submit">Create requirement</button>
+          {notice && <p className="feast-notice" role="status">{notice}</p>}
+        </form>
+
+        <section className="feast-requests">
+          <div className="feast-list-heading">
+            <h2>Your demo requirements</h2>
+            <span>{requests.length}</span>
+          </div>
+
+          {requests.length === 0 && (
+            <div className="feast-empty">
+              <span>🥬</span>
+              <h3>No requirements yet</h3>
+              <p>Apni pehli bulk crop requirement form se create karo.</p>
+            </div>
+          )}
+
+          {requests.map((item) => (
+            <article className="feast-request-card" key={item.id}>
+              <div className="feast-card-top">
+                <h3>{item.eventName}</h3>
+                <span>{item.status}</span>
+              </div>
+              <p><strong>{item.cropName}</strong> · {item.quantityKg.toLocaleString("en-IN")} kg</p>
+              <p>Budget: ₹{item.budgetPerKg}/kg</p>
+              <p>Location: {item.location}</p>
+              <p>Delivery: {item.deliveryDate}</p>
+              <strong className="feast-total">₹{(item.quantityKg * item.budgetPerKg).toLocaleString("en-IN")}</strong>
+            </article>
+          ))}
+          <p className="feast-demo-note">Demo only: requests are held in page memory and are not saved to the server.</p>
+        </section>
+      </section>
+    </main>
+  );
+}

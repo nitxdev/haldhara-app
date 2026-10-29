@@ -1,0 +1,107 @@
+﻿import { Router } from "express";
+import mongoose from "mongoose";
+import CropOffer from "../../models/CropOffer.js";
+import CropListing from "../../models/CropListing.js";
+import BuyerRequirement from "../../models/BuyerRequirement.js";
+import User from "../../models/User.js";
+import jwt from "jsonwebtoken";
+
+const router = Router();
+
+async function getCurrentUser(req: any) {
+  const header = req.headers.authorization;
+  if (!header?.startsWith("Bearer ")) return null;
+
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error("JWT_SECRET is not configured.");
+
+  const payload = jwt.verify(header.slice(7), secret) as any;
+  const query = payload.userId ?? payload.id ?? payload.sub;
+
+  if (query && mongoose.isValidObjectId(String(query))) {
+    return User.findById(query);
+  }
+  if (payload.phone) return User.findOne({ phone: payload.phone });
+  return null;
+}
+
+// Submit an offer against an open requirement and an active crop listing.
+router.post("/", async (req, res, next) => {
+  try {
+    const user = await getCurrentUser(req);
+    if (!user) return res.status(401).json({ message: "Please log in first." });
+
+    if (!["farmer", "admin"].includes(String((user as any).role))) {
+      return res.status(403).json({ message: "Only farmers can submit crop offers." });
+    }
+
+    const { requirementId, listingId, offeredQuantityKg, offeredPricePerKg, message = "" } = req.body ?? {};
+
+    if (!mongoose.isValidObjectId(requirementId) || !mongoose.isValidObjectId(listingId)) {
+      return res.status(400).json({ message: "Valid requirementId and listingId are required." });
+    }
+
+    const quantity = Number(offeredQuantityKg);
+    const price = Number(offeredPricePerKg);
+
+    if (!Number.isFinite(quantity) || quantity <= 0 ||
+        !Number.isFinite(price) || price <= 0 ||
+        typeof message !== "string" || message.length > 1000) {
+      return res.status(400).json({ message: "Enter a valid quantity, price and message (max 1000 characters)." });
+    }
+
+    const [requirement, listing] = await Promise.all([
+      BuyerRequirement.findOne({ _id: requirementId, status: "open" }),
+      CropListing.findOne({ _id: listingId, status: "active" }),
+    ]);
+
+    if (!requirement) return res.status(404).json({ message: "Open requirement not found." });
+    if (!listing) return res.status(404).json({ message: "Active crop listing not found." });
+
+    if (String(listing.cropName).trim().toLowerCase() !== String(requirement.cropName).trim().toLowerCase()) {
+      return res.status(400).json({ message: "Listing crop does not match this requirement." });
+    }
+
+    if (quantity > Number(listing.quantityKg)) {
+      return res.status(400).json({ message: "Offer quantity cannot exceed the listed crop quantity." });
+    }
+
+    if (String((listing as any).farmer) !== String((user as any)._id)) {
+      return res.status(403).json({ message: "You can only offer your own crop listing." });
+    }
+
+    const offer = await CropOffer.create({
+      requirement: requirement._id,
+      listing: listing._id,
+      farmer: (user as any)._id,
+      offeredQuantityKg: quantity,
+      offeredPricePerKg: price,
+      message: message.trim(),
+    });
+
+    return res.status(201).json({ success: true, data: offer });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Farmer can view offers they submitted.
+router.get("/mine", async (req, res, next) => {
+  try {
+    const user = await getCurrentUser(req);
+    if (!user) return res.status(401).json({ message: "Please log in first." });
+
+    const offers = await CropOffer.find({ farmer: (user as any)._id })
+      .populate("requirement", "cropName quantityKg targetPricePerKg deliveryLocation requiredBy")
+      .populate("listing", "cropName quantityKg expectedPricePerKg location")
+      .sort({ createdAt: -1 })
+      .limit(100)
+      .lean();
+
+    return res.json({ success: true, data: offers });
+  } catch (error) {
+    next(error);
+  }
+});
+
+export default router;

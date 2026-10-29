@@ -1,0 +1,74 @@
+
+  src\Dashboard.tsx:284:      </main>
+  src\Dashboard.tsx:285:          {active === "Transport" && (
+> src\Dashboard.tsx:286:  <section className="haldhara-feature-fallback" style={{ padding: "24px", margin: "16px", background: "#fffdf5", borderRadius: "16px" }}>
+  src\Dashboard.tsx:287:    <button type="button" onClick={() => setActive("Home")} style={{ padding: "8px 14px", cursor: "pointer", marginBottom: "16px" }}>? Back to Home</button>
+  src\Dashboard.tsx:288:    <h2>Transport</h2>
+> src\Dashboard.tsx:289:    <p>This Haldhara feature is ready for integration. Demo information only; verify live data before making farming decisions.</p>
+  src\Dashboard.tsx:290:  </section>
+  src\Dashboard.tsx:291:)}
+  src\Dashboard.tsx:292:{active === "Market Price" && (
+> src\Dashboard.tsx:293:  <section className="haldhara-feature-fallback" style={{ padding: "24px", margin: "16px", background: "#fffdf5", borderRadius: "16px" }}>
+  src\Dashboard.tsx:294:    <button type="button" onClick={() => setActive("Home")} style={{ padding: "8px 14px", cursor: "pointer", marginBottom: "16px" }}>? Back to Home</button>
+  src\Dashboard.tsx:295:    <h2>Market Price</h2>
+> src\Dashboard.tsx:296:    <p>This Haldhara feature is ready for integration. Demo information only; verify live data before making farming decisions.</p>
+  src\Dashboard.tsx:297:  </section>
+  src\Dashboard.tsx:298:)}
+  src\Dashboard.tsx:299:{active === "Trending Crops" && (
+> src\Dashboard.tsx:300:  <section className="haldhara-feature-fallback" style={{ padding: "24px", margin: "16px", background: "#fffdf5", borderRadius: "16px" }}>
+  src\Dashboard.tsx:301:    <button type="button" onClick={() => setActive("Home")} style={{ padding: "8px 14px", cursor: "pointer", marginBottom: "16px" }}>? Back to Home</button>
+  src\Dashboard.tsx:302:    <h2>Trending Crops</h2>
+> src\Dashboard.tsx:303:    <p>This Haldhara feature is ready for integration. Demo information only; verify live data before making farming decisions.</p>
+  src\Dashboard.tsx:304:  </section>
+  src\Dashboard.tsx:305:)}
+  src\Dashboard.tsx:306:{active === "Community" && (
+> src\Dashboard.tsx:307:  <section className="haldhara-feature-fallback" style={{ padding: "24px", margin: "16px", background: "#fffdf5", borderRadius: "16px" }}>
+  src\Dashboard.tsx:308:    <button type="button" onClick={() => setActive("Home")} style={{ padding: "8px 14px", cursor: "pointer", marginBottom: "16px" }}>? Back to Home</button>
+  src\Dashboard.tsx:309:    <h2>Community</h2>
+> src\Dashboard.tsx:310:    <p>This Haldhara feature is ready for integration. Demo information only; verify live data before making farming decisions.</p>
+  src\Dashboard.tsx:311:  </section>
+  src\Dashboard.tsx:312:)}
+  src\Dashboard.tsx:313:{active === "Expert Advice" && (
+> src\Dashboard.tsx:314:  <section className="haldhara-feature-fallback" style={{ padding: "24px", margin: "16px", background: "#fffdf5", borderRadius: "16px" }}>
+  src\Dashboard.tsx:315:    <button type="button" onClick={() => setActive("Home")} style={{ padding: "8px 14px", cursor: "pointer", marginBottom: "16px" }}>? Back to Home</button>
+  src\Dashboard.tsx:316:    <h2>Expert Advice</h2>
+> src\Dashboard.tsx:317:    <p>This Haldhara feature is ready for integration. Demo information only; verify live data before making farming decisions.</p>
+  src\Dashboard.tsx:318:  </section>
+  src\Dashboard.tsx:319:)}
+  src\Dashboard.tsx:320:{active === "Weather" && (
+> src\Dashboard.tsx:321:  <section className="haldhara-feature-fallback" style={{ padding: "24px", margin: "16px", background: "#fffdf5", borderRadius: "16px" }}>
+  src\Dashboard.tsx:322:    <button type="button" onClick={() => setActive("Home")} style={{ padding: "8px 14px", cursor: "pointer", marginBottom: "16px" }}>? Back to Home</button>
+  src\Dashboard.tsx:323:    <h2>Weather</h2>
+> src\Dashboard.tsx:324:    <p>This Haldhara feature is ready for integration. Demo information only; verify live data before making farming decisions.</p>
+  src\Dashboard.tsx:325:  </section>
+  src\Dashboard.tsx:326:)}
+  src\Dashboard.tsx:327:{active === "My Orders" && (
+> src\Dashboard.tsx:328:  <section className="haldhara-feature-fallback" style={{ padding: "24px", margin: "16px", background: "#fffdf5", borderRadius: "16px" }}>
+  src\Dashboard.tsx:329:    <button type="button" onClick={() => setActive("Home")} style={{ padding: "8px 14px", cursor: "pointer", marginBottom: "16px" }}>? Back to Home</button>
+  src\Dashboard.tsx:330:    <h2>My Orders</h2>
+> src\Dashboard.tsx:331:    <p>This Haldhara feature is ready for integration. Demo information only; verify live data before making farming decisions.</p>
+  src\Dashboard.tsx:332:  </section>
+  src\Dashboard.tsx:333:)}
+  src\Dashboard.tsx:334:{active === "Government Schemes" && (
+> src\Dashboard.tsx:335:  <section className="haldhara-feature-fallback" style={{ padding: "24px", margin: "16px", background: "#fffdf5", borderRadius: "16px" }}>
+  src\Dashboard.tsx:336:    <button type="button" onClick={() => setActive("Home")} style={{ padding: "8px 14px", cursor: "pointer", marginBottom: "16px" }}>? Back to Home</button>
+  src\Dashboard.tsx:337:    <h2>Government Schemes</h2>
+> src\Dashboard.tsx:338:    <p>This Haldhara feature is ready for integration. Demo information only; verify live data before making farming decisions.</p>
+  src\Dashboard.tsx:339:  </section>
+  src\Dashboard.tsx:340:)}
+  src\Dashboard.tsx:341:{active === "Learn Haldhara" && (
+> src\Dashboard.tsx:342:  <section className="haldhara-feature-fallback" style={{ padding: "24px", margin: "16px", background: "#fffdf5", borderRadius: "16px" }}>
+  src\Dashboard.tsx:343:    <button type="button" onClick={() => setActive("Home")} style={{ padding: "8px 14px", cursor: "pointer", marginBottom: "16px" }}>? Back to Home</button>
+  src\Dashboard.tsx:344:    <h2>Learn Haldhara</h2>
+> src\Dashboard.tsx:345:    <p>This Haldhara feature is ready for integration. Demo information only; verify live data before making farming decisions.</p>
+  src\Dashboard.tsx:346:  </section>
+  src\Dashboard.tsx:347:)}
+  src\Dashboard.tsx:348:{(active === "Sell Crop" || active === "Sell My Crop") && (
+  src\Dashboard.tsx:349:        <div className="haldhara-crop-modal" role="dialog" aria-modal="true" aria-label="Sell your crop">
+  src\Dashboard.tsx:350:          <div className="haldhara-crop-modal-panel">
+  src\Dashboard.tsx:351:            <button
+  src\Dashboard.tsx:352:              type="button"
+  src\Dashboard.tsx:353:              className="haldhara-crop-modal-close"
+
+
+

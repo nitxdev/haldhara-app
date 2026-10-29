@@ -1,0 +1,38 @@
+﻿.weather-page{max-width:1240px;margin:auto;padding:28px;color:#24372b}
+.weather-heading{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:24px}
+.weather-eyebrow{font-size:11px;font-weight:800;letter-spacing:1.5px;color:#59805a}
+.weather-heading h1{font-size:clamp(25px,3vw,34px);margin:8px 0}
+.weather-heading p,.weather-muted{color:#7b8479;font-size:13px;margin:6px 0}
+.weather-region{display:grid;gap:7px;font-size:12px;font-weight:700}
+.weather-region select{padding:11px;border:1px solid #dce4d9;border-radius:9px;background:#fffdf7;color:#24372b}
+.weather-demo-notice{background:#fff8e5;border:1px solid #ead9a6;border-radius:12px;padding:15px;margin-bottom:20px;color:#765d1d}
+.weather-demo-notice strong{font-size:12px}
+.weather-demo-notice p{font-size:13px;line-height:1.5;margin:6px 0 0}
+.weather-current{padding:25px;border-radius:17px;background:linear-gradient(125deg,#244c36,#4b7952);color:white;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.weather-current>div:first-child>span{font-size:11px;color:#d4e5d4;letter-spacing:1px}
+.weather-current h2{margin:8px 0}
+.weather-temp{font-size:48px;font-weight:750;margin:10px 0}
+.weather-temp span{font-size:36px}
+.weather-stats{display:flex;gap:24px;flex-wrap:wrap}
+.weather-stats div{display:grid;gap:7px}
+.weather-stats span{font-size:12px;color:#d4e5d4}
+.weather-section{margin-top:30px}
+.weather-section h2{font-size:20px;margin:0}
+.weather-days{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:16px}
+.weather-day{padding:17px 10px;border:1px solid #e7e9df;border-radius:13px;background:#fffdf8;display:flex;flex-direction:column;align-items:center;gap:11px;text-align:center;min-width:0}
+.weather-day>span:not(.weather-icon){font-size:12px;color:#788277}
+.weather-icon{font-size:32px}
+.weather-rain{margin-top:5px}
+.weather-bar{height:5px;width:100%;border-radius:8px;background:#e6edf3;overflow:hidden}
+.weather-bar div{height:100%;background:#6c9fce}
+.weather-advice{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:16px}
+.weather-advice article{padding:18px;border:1px solid #e7e9df;border-radius:13px;background:#fffdf8}
+.weather-advice-icon{font-size:25px}
+.weather-advice h3{font-size:16px;margin:13px 0 7px}
+.weather-advice p,.weather-alert-box p{font-size:13px;line-height:1.6;color:#788277;margin:0}
+.weather-alert-box{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:24px;padding:18px;border:1px solid #e7e9df;border-radius:13px;background:#f7f8f0}
+.weather-alert-box h3{font-size:15px;margin:0 0 6px}
+.weather-alert-box button{border:0;border-radius:9px;background:#315f3d;color:white;padding:11px 15px;font-weight:700;cursor:pointer;white-space:nowrap}
+.weather-footnote{font-size:11px;color:#899187;line-height:1.6;margin-top:16px}
+@media(max-width:800px){.weather-days{grid-template-columns:repeat(3,minmax(0,1fr))}.weather-advice{grid-template-columns:1fr}}
+@media(max-width:500px){.weather-page{padding:15px}.weather-days{grid-template-columns:repeat(2,minmax(0,1fr))}.weather-current{padding:19px}.weather-stats{gap:18px}}

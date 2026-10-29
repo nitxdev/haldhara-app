@@ -1,0 +1,62 @@
+﻿import { Router } from "express";
+import { Types } from "mongoose";
+import { z } from "zod";
+import FeastBooking from "../../models/FeastBooking.js";
+
+const router = Router();
+
+const bookingSchema = z.object({
+  eventName: z.string().trim().min(1).max(120),
+  eventType: z.string().trim().min(1).max(60),
+  eventDate: z.coerce.date(),
+  location: z.string().trim().min(1).max(200),
+  guests: z.coerce.number().int().min(1),
+  crops: z.string().trim().min(1).max(2000),
+  budget: z.coerce.number().min(0),
+  notes: z.string().max(2000).optional().default("")
+});
+
+router.post("/", async (req, res) => {
+  try {
+    const user = (req as any).user;
+    const userId = user?.id ?? user?._id;
+    if (!userId || !Types.ObjectId.isValid(String(userId))) {
+      return res.status(401).json({ success: false, message: "Authentication required" });
+    }
+
+    const parsed = bookingSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ success: false, message: "Invalid booking details", errors: parsed.error.flatten() });
+    }
+
+    if (parsed.data.eventDate < new Date(new Date().toDateString())) {
+      return res.status(400).json({ success: false, message: "Event date must be today or later" });
+    }
+
+    const booking = await FeastBooking.create({ ...parsed.data, user: userId });
+    return res.status(201).json({ success: true, data: booking });
+  } catch (error) {
+    console.error("Create feast booking failed:", error);
+    return res.status(500).json({ success: false, message: "Could not create booking" });
+  }
+});
+
+router.get("/mine", async (req, res) => {
+  try {
+    const user = (req as any).user;
+    const userId = user?.id ?? user?._id;
+    if (!userId || !Types.ObjectId.isValid(String(userId))) {
+      return res.status(401).json({ success: false, message: "Authentication required" });
+    }
+
+    const bookings = await FeastBooking.find({ user: userId }).sort({ createdAt: -1 });
+    return res.json({ success: true, data: bookings });
+  } catch (error) {
+    console.error("Fetch feast bookings failed:", error);
+    return res.status(500).json({ success: false, message: "Could not fetch bookings" });
+  }
+});
+
+export default router;
+
+

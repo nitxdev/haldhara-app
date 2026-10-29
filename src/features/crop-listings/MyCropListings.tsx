@@ -1,0 +1,120 @@
+﻿import { useCallback, useEffect, useState } from "react";
+
+type CropListing = {
+  _id: string;
+  cropName: string;
+  quantityKg: number;
+  expectedPricePerKg: number;
+  location: string;
+  description?: string;
+  imageUrl?: string;
+  status: "active" | "sold" | "cancelled";
+  createdAt: string;
+};
+
+export default function MyCropListings() {
+  const [listings, setListings] = useState<CropListing[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const loadListings = useCallback(async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const token = localStorage.getItem("haldhara_token");
+      if (!token) throw new Error("Please log in to view your crop listings.");
+
+      const response = await fetch("http://localhost:5001/api/crops/mine", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Could not load your listings.");
+      }
+
+      setListings(Array.isArray(result.data) ? result.data : []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadListings();
+  }, [loadListings]);
+
+  return (
+    <section style={{ maxWidth: 900, margin: "0 auto", padding: 24, color: "#203b2b" }}>
+      <h1>My Crop Listings</h1>
+      <p style={{ color: "#6f7c70" }}>
+        Your crops listed on the Haldhara marketplace.
+      </p>
+
+      {loading && <p>Loading your listings...</p>}
+
+      {!loading && error && (
+        <div role="alert">
+          <p>{error}</p>
+          <button type="button" onClick={() => void loadListings()}>Try again</button>
+        </div>
+      )}
+
+      {!loading && !error && listings.length === 0 && (
+        <div style={{ padding: 24, border: "1px solid #dce3d6", borderRadius: 16 }}>
+          <h3>No crop listings yet</h3>
+          <p>Your submitted crops will appear here after they are saved.</p>
+        </div>
+      )}
+
+      {!loading && !error && listings.length > 0 && (
+        <div style={{ display: "grid", gap: 14 }}>
+          {listings.map((crop) => (
+            <article
+              key={crop._id}
+              style={{
+                padding: 20,
+                border: "1px solid #dce3d6",
+                borderRadius: 16,
+                background: "#fffdf7",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+                <h3 style={{ margin: 0 }}>{crop.cropName}</h3>
+                <span>{crop.status.toUpperCase()}</span>
+              </div>
+              {crop.imageUrl && (
+                <img
+                  src={`http://localhost:5001${crop.imageUrl}`}
+                  alt={`${crop.cropName} crop`}
+                  loading="lazy"
+                  style={{
+                    width: "100%",
+                    maxHeight: 260,
+                    objectFit: "cover",
+                    borderRadius: 12,
+                    marginTop: 12,
+                  }}
+                />
+              )}
+              <p>{crop.location}</p>
+              <p>
+                Quantity: <strong>{crop.quantityKg.toLocaleString()} kg</strong>
+              </p>
+              <p>
+                Expected price: <strong>₹{crop.expectedPricePerKg.toLocaleString("en-IN")}/kg</strong>
+              </p>
+              {crop.description && <p>{crop.description}</p>}
+              <small>
+                Listed: {new Date(crop.createdAt).toLocaleDateString("en-IN")}
+              </small>
+            </article>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+

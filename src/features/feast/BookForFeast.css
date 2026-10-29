@@ -1,0 +1,21 @@
+﻿.feast-page{max-width:1180px;margin:auto;padding:28px clamp(16px,4vw,36px);color:#243d2c}
+.feast-header>span{font-size:11px;font-weight:800;letter-spacing:1.4px;color:#55805d}
+.feast-header h1{margin:8px 0;font-size:clamp(28px,4vw,38px)}
+.feast-header p{color:#718071;line-height:1.6}
+.feast-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;margin-top:24px;align-items:start}
+.feast-form,.feast-requests{background:#fff;border:1px solid #e5eadd;border-radius:18px;padding:22px;min-width:0}
+.feast-form h2,.feast-requests h2{font-size:19px;margin:0 0 20px}
+.feast-form label{display:grid;gap:7px;margin:14px 0;font-size:13px;font-weight:650}
+.feast-form input,.feast-form select{width:100%;min-width:0;box-sizing:border-box;padding:12px;border:1px solid #dce5d8;border-radius:10px;background:#fff;color:#243d2c;font:inherit}
+.feast-two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.feast-estimate{display:flex;justify-content:space-between;align-items:center;margin:20px 0;padding:14px;background:#f0f6ed;border-radius:12px}
+.feast-estimate span{color:#607360;font-size:13px}.feast-estimate strong,.feast-total{color:#286744;font-size:21px}
+.feast-form button{width:100%;padding:13px;border:0;border-radius:11px;background:#286744;color:white;font-weight:750;font-size:14px;cursor:pointer}
+.feast-notice{font-size:13px;line-height:1.5;color:#286744}
+.feast-list-heading,.feast-card-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.feast-list-heading h2{margin-bottom:16px}.feast-list-heading>span,.feast-card-top>span{padding:5px 9px;background:#e8f3e7;color:#286744;border-radius:30px;font-size:12px}
+.feast-empty{text-align:center;padding:35px 12px;color:#718071}.feast-empty>span{font-size:32px}.feast-empty h3{color:#243d2c}
+.feast-request-card{border:1px solid #e7ece3;border-radius:13px;padding:15px;margin:12px 0;overflow-wrap:anywhere}
+.feast-request-card h3{margin:0;font-size:16px}.feast-request-card p{font-size:13px;color:#68776a;line-height:1.5}
+.feast-total{display:block;text-align:right}.feast-demo-note{font-size:11px;line-height:1.5;color:#8b7760}
+@media(max-width:760px){.feast-layout{grid-template-columns:1fr}.feast-form,.feast-requests{padding:17px}}

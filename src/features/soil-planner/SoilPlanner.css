@@ -1,0 +1,33 @@
+﻿.soil-page{max-width:1100px;margin:auto;padding:28px;color:#26392c}
+.soil-header{margin-bottom:22px}
+.soil-eyebrow{font-size:11px;font-weight:800;letter-spacing:1.5px;color:#59805a}
+.soil-header h1{font-size:clamp(25px,3vw,34px);margin:9px 0}
+.soil-header p,.soil-muted{font-size:13px;color:#788277;line-height:1.6}
+.soil-notice{padding:15px;background:#fff8e6;border:1px solid #ead9a6;border-radius:12px;font-size:13px;line-height:1.6;color:#765d1d;margin-bottom:20px}
+.soil-card{padding:22px;border:1px solid #e4e9df;border-radius:15px;background:#fffdf8;margin-bottom:18px}
+.soil-card h2{font-size:19px;margin:0 0 14px}
+.soil-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+.soil-fields label{display:grid;gap:8px;font-size:13px;font-weight:700}
+.soil-fields select{width:100%;padding:12px;border:1px solid #dce4d9;border-radius:9px;background:white;color:#26392c;font:inherit}
+.soil-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}
+.soil-summary article{display:grid;gap:8px;padding:17px;border-radius:13px;background:#edf3e8}
+.soil-summary article>span{font-size:24px}
+.soil-summary small{font-size:11px;color:#788277}
+.soil-summary strong{font-size:16px}
+.soil-card>p{font-size:14px;line-height:1.7}
+.soil-warning,.soil-tip{padding:12px;border-radius:9px;font-size:13px;line-height:1.6;margin-top:12px}
+.soil-warning{background:#fff0e8;color:#8b4a2b}
+.soil-tip{background:#eaf3fb;color:#385d7c}
+.soil-task-heading{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.soil-task-heading h2{margin-bottom:5px}
+.soil-task-heading>strong{color:#426d43}
+.soil-task-heading .soil-muted{margin:0 0 14px}
+.soil-progress{height:7px;background:#e8ede4;border-radius:8px;overflow:hidden;margin-bottom:14px}
+.soil-progress div{height:100%;background:#58865a;transition:width .2s}
+.soil-tasks{display:grid;gap:0}
+.soil-task{display:flex;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid #edf0e9;font-size:13px;line-height:1.5;cursor:pointer}
+.soil-task:last-child{border-bottom:0}
+.soil-task input{width:17px;height:17px;accent-color:#47784b;flex-shrink:0}
+.soil-task.completed span{color:#849083;text-decoration:line-through}
+.soil-footnote{font-size:11px;color:#899187;line-height:1.7}
+@media(max-width:650px){.soil-page{padding:16px}.soil-card{padding:17px}.soil-fields{grid-template-columns:1fr}.soil-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}

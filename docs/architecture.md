@@ -1,0 +1,3 @@
+﻿# architecture
+
+Haldhara project documentation.

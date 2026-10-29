@@ -1,0 +1,89 @@
+﻿.crop-form-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  color: #203b2b;
+}
+.crop-form-heading { margin-bottom: 24px; }
+.crop-form-eyebrow {
+  color: #527b55;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+}
+.crop-form-heading h1 {
+  margin: 10px 0 8px;
+  font-size: clamp(28px, 4vw, 38px);
+}
+.crop-form-heading p { color: #6f7c70; margin: 0; }
+.crop-listing-form {
+  display: grid;
+  gap: 20px;
+  padding: 26px;
+  border: 1px solid #e5e9dd;
+  border-radius: 20px;
+  background: #fffdf7;
+  box-shadow: 0 10px 32px #203b2b0b;
+}
+.crop-listing-form label {
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 650;
+}
+.crop-listing-form input,
+.crop-listing-form select,
+.crop-listing-form textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid #dce3d6;
+  border-radius: 10px;
+  background: #fff;
+  color: #203b2b;
+  font: inherit;
+  outline: none;
+}
+.crop-listing-form input:focus,
+.crop-listing-form select:focus,
+.crop-listing-form textarea:focus {
+  border-color: #286744;
+  box-shadow: 0 0 0 3px #28674418;
+}
+.crop-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.crop-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+.crop-submit, .crop-cancel {
+  padding: 13px 20px;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+.crop-submit {
+  border: 0;
+  background: #286744;
+  color: white;
+}
+.crop-submit:disabled { opacity: .65; cursor: wait; }
+.crop-cancel {
+  border: 1px solid #dce3d6;
+  background: white;
+  color: #203b2b;
+}
+.crop-form-message { margin: 0; color: #286744; font-size: 14px; }
+.crop-form-note { margin: 0; color: #778174; font-size: 12px; }
+@media (max-width: 560px) {
+  .crop-form-page { padding: 22px 14px; }
+  .crop-listing-form { padding: 18px; }
+  .crop-form-row { grid-template-columns: 1fr; }
+  .crop-form-actions { flex-direction: column; }
+  .crop-submit, .crop-cancel { width: 100%; }
+}

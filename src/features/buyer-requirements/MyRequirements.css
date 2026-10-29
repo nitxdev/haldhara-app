@@ -1,0 +1,26 @@
+﻿.my-requirements-page { max-width: 1180px; margin: auto; padding: 30px clamp(16px,4vw,40px); color: #243c2c; }
+.my-requirements-heading > span { color: #58805d; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; }
+.my-requirements-heading h1 { margin: 8px 0; font-size: clamp(26px,4vw,36px); }
+.my-requirements-heading p { color: #718071; line-height: 1.6; }
+.my-requirements-filters { display: grid; grid-template-columns: minmax(0,1fr) 220px; gap: 12px; margin: 24px 0; }
+.my-requirements-filters input, .my-requirements-filters select { box-sizing: border-box; width: 100%; min-width: 0; padding: 13px; border: 1px solid #dce5d9; border-radius: 12px; background: white; font: inherit; }
+.my-requirements-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,270px),1fr)); gap: 18px; }
+.my-requirements-card { padding: 21px; border: 1px solid #e4e9df; border-radius: 18px; background: white; }
+.my-requirements-card-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.my-requirements-card h2 { margin: 0; font-size: 21px; }
+.my-requirements-status { padding: 6px 10px; border-radius: 999px; background: #e8f4e7; color: #317247; font-size: 12px; text-transform: capitalize; }
+.status-cancelled { background: #fce8e6; color: #a33a2c; }
+.status-fulfilled { background: #e5edf9; color: #315b92; }
+.my-requirements-price { color: #286744; font-size: 27px; font-weight: 800; }
+.my-requirements-price small { font-size: 12px; color: #7a887b; font-weight: 500; }
+.my-requirements-details { display: grid; gap: 8px; }
+.my-requirements-details p { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; }
+.my-requirements-details span { color: #7a887b; }
+.my-requirements-details strong { text-align: right; overflow-wrap: anywhere; }
+.my-requirements-notes { border-top: 1px solid #edf0e9; padding-top: 12px; color: #667467; font-size: 13px; line-height: 1.6; }
+.my-requirements-state, .my-requirements-empty { padding: 35px 18px; text-align: center; color: #718071; }
+.my-requirements-error { color: #a33a2c; }
+.my-requirements-empty { text-align: center; }
+.my-requirements-empty span { font-size: 34px; }
+.my-requirements-empty h3 { color: #243c2c; }
+@media(max-width:600px) { .my-requirements-filters { grid-template-columns: 1fr; } }

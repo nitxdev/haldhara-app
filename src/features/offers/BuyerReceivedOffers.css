@@ -1,0 +1,35 @@
+﻿.buyer-received-page { max-width: 1180px; margin: auto; padding: 30px clamp(16px,4vw,40px); color: #243c2c; }
+.buyer-received-heading > span { color: #58805d; font-size: 11px; font-weight: 800; letter-spacing: 1.4px; }
+.buyer-received-heading h1 { margin: 8px 0; font-size: clamp(26px,4vw,36px); }
+.buyer-received-heading p { color: #718071; line-height: 1.6; }
+.buyer-received-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin: 24px 0; }
+.buyer-received-toolbar > div { display: flex; gap: 9px; align-items: center; }
+.buyer-received-toolbar > div strong { color: #286744; font-size: 23px; }
+.buyer-received-toolbar > div span { color: #718071; font-size: 13px; }
+.buyer-received-toolbar select { padding: 11px 13px; border: 1px solid #dce5d9; border-radius: 10px; background: white; color: #243c2c; font: inherit; }
+.buyer-received-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,280px),1fr)); gap: 18px; }
+.buyer-received-card { padding: 20px; border: 1px solid #e4e9df; border-radius: 17px; background: white; }
+.buyer-received-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.buyer-received-card h2 { margin: 0; font-size: 20px; }
+.buyer-received-status { padding: 6px 10px; border-radius: 999px; background: #fff1d7; color: #895e19; font-size: 12px; text-transform: capitalize; }
+.status-accepted { background: #e4f4e5; color: #286744; }
+.status-rejected, .status-withdrawn { background: #f9e8e5; color: #9b3a2d; }
+.buyer-received-farmer { margin: 13px 0; color: #718071; font-size: 13px; }
+.buyer-received-price { margin: 12px 0 18px; color: #286744; font-size: 27px; font-weight: 800; }
+.buyer-received-price small { color: #718071; font-size: 12px; font-weight: 500; }
+.buyer-received-details { display: grid; gap: 10px; padding-top: 14px; border-top: 1px solid #edf0e9; }
+.buyer-received-details p { display: flex; justify-content: space-between; gap: 12px; margin: 0; font-size: 13px; }
+.buyer-received-details span { color: #718071; }
+.buyer-received-details strong { text-align: right; overflow-wrap: anywhere; }
+.buyer-received-message { margin-top: 14px; color: #667467; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+.buyer-received-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+.buyer-received-actions button, .buyer-received-error button { padding: 11px 12px; border: 0; border-radius: 10px; background: #286744; color: white; font: inherit; font-weight: 700; cursor: pointer; }
+.buyer-received-actions button.reject { background: #f8e9e5; color: #963b30; }
+.buyer-received-actions button:disabled { opacity: .6; cursor: wait; }
+.buyer-received-state, .buyer-received-empty { padding: 34px 15px; text-align: center; color: #718071; }
+.buyer-received-error { color: #a33a2c; }
+.buyer-received-empty { text-align: center; }
+.buyer-received-empty span { font-size: 34px; }
+.buyer-received-empty h3 { color: #243c2c; }
+.buyer-received-notice { color: #286744; }
+.buyer-received-disclaimer { margin-top: 20px; color: #718071; font-size: 12px; line-height: 1.6; }

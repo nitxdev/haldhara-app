@@ -1,0 +1,37 @@
+﻿.disease-page{max-width:1100px;margin:auto;padding:28px;color:#26392c}
+.disease-heading{margin-bottom:22px}
+.disease-eyebrow{font-size:11px;font-weight:800;letter-spacing:1.5px;color:#58815b}
+.disease-heading h1{font-size:clamp(25px,3vw,34px);margin:9px 0}
+.disease-heading>p,.disease-muted{color:#788277;font-size:13px;line-height:1.6}
+.disease-notice{display:flex;gap:12px;background:#fff8e6;border:1px solid #ead9a6;border-radius:12px;padding:15px;color:#765d1d;margin-bottom:20px}
+.disease-notice>span{font-size:20px}
+.disease-notice strong{font-size:13px}
+.disease-notice p{font-size:12px;line-height:1.5;margin:5px 0 0}
+.disease-form-card,.disease-result{border:1px solid #e4e9df;background:#fffdf8;border-radius:16px;padding:23px;margin-bottom:20px}
+.disease-form-card h2,.disease-result h2{font-size:20px;margin:0 0 7px}
+.disease-muted{margin:0 0 20px}
+.disease-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.disease-form-grid label{display:grid;gap:8px;font-size:13px;font-weight:700}
+.disease-form-grid select,.disease-form-grid textarea{width:100%;box-sizing:border-box;border:1px solid #dce4d9;border-radius:9px;background:white;padding:12px;color:#26392c;font:inherit;font-size:13px}
+.disease-form-grid textarea{resize:vertical;line-height:1.5}
+.disease-primary-button{margin-top:20px;background:#315f3d;color:white;border:0;border-radius:9px;padding:12px 17px;font-weight:700;cursor:pointer}
+.disease-primary-button:hover{background:#244b30}
+.disease-result{border-color:#d6e4d1}
+.disease-result-header{display:flex;gap:14px;align-items:center}
+.disease-result-icon{font-size:34px;background:#edf3e8;border-radius:12px;padding:10px}
+.disease-result-label{font-size:10px;font-weight:800;letter-spacing:1px;color:#59805a}
+.disease-result-header h2{margin:5px 0}
+.disease-result-header p{font-size:12px;color:#788277;margin:0}
+.disease-severity{display:inline-block;margin-top:17px;background:#fff0d3;color:#805d1c;border-radius:20px;padding:6px 10px;font-size:11px;font-weight:700}
+.disease-cause{font-size:14px;line-height:1.7}
+.disease-result h3{font-size:15px}
+.disease-result ol{padding-left:22px}
+.disease-result li{font-size:13px;line-height:1.7;padding:3px 0}
+.disease-observations{background:#f1f5ed;border-radius:10px;padding:13px;margin-top:15px}
+.disease-observations p{font-size:13px;white-space:pre-wrap;margin-bottom:0}
+.disease-warning{font-size:12px;line-height:1.7;color:#785b27;background:#fff8e8;padding:13px;border-radius:9px;margin-top:18px}
+.disease-help{display:flex;gap:14px;padding:18px;border-radius:14px;background:#edf3e8;align-items:flex-start}
+.disease-help>span{font-size:28px}
+.disease-help h3{margin:2px 0 7px;font-size:15px}
+.disease-help p{margin:0;color:#657364;font-size:13px;line-height:1.7}
+@media(max-width:600px){.disease-page{padding:16px}.disease-form-card,.disease-result{padding:17px}.disease-form-grid{grid-template-columns:1fr}}
