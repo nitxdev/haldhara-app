@@ -664,7 +664,93 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   <section style={{padding:"24px",margin:"16px",background:"#fffdf5",borderRadius:"16px",color:"#234b35"}}>
     <button onClick={() => setActive("Home")}>← Back to Home</button>
     <h2>🧑‍🌾 Farmer Community</h2>
-    <p>Demo discussions. Verify farming advice with a qualified local expert.</p>
+    <p>Ask questions, share farming knowledge and learn from other farmers.</p>
+
+    <form
+      onSubmit={e => {
+        e.preventDefault();
+        const form = e.currentTarget;
+        const data = new FormData(form);
+        const question = String(data.get("question") || "").trim();
+
+        if (!question) return;
+
+        try {
+          const previous = JSON.parse(
+            localStorage.getItem("haldharaCommunityQueries") || "[]"
+          );
+          if (!Array.isArray(previous)) throw new Error("Invalid saved data");
+
+          const post = {
+            id: Date.now(),
+            crop: String(data.get("crop") || "Other"),
+            question,
+            createdAt: new Date().toISOString()
+          };
+
+          localStorage.setItem(
+            "haldharaCommunityQueries",
+            JSON.stringify([post, ...previous])
+          );
+
+          alert("Your question has been saved on this device.");
+          form.reset();
+        } catch {
+          alert("Could not save your question. Please try again.");
+        }
+      }}
+      style={{
+        display: "grid",
+        gap: "12px",
+        padding: "20px",
+        margin: "18px 0",
+        background: "#ffffff",
+        border: "1px solid #dce7dc",
+        borderRadius: "14px"
+      }}
+    >
+      <h3 style={{ margin: 0 }}>🌱 Ask the Community</h3>
+
+      <label style={{ display: "grid", gap: "6px" }}>
+        Crop
+        <select
+          name="crop"
+          defaultValue="Ginger"
+          style={{ padding: "11px", border: "1px solid #dce2d8", borderRadius: "9px", background: "#fff" }}
+        >
+          <option>Ginger</option>
+          <option>Potato</option>
+          <option>Pineapple</option>
+          <option>Orange</option>
+          <option>Kiwi</option>
+          <option>Rice</option>
+          <option>Maize</option>
+          <option>Other</option>
+        </select>
+      </label>
+
+      <label style={{ display: "grid", gap: "6px" }}>
+        Your question
+        <textarea
+          name="question"
+          required
+          minLength={5}
+          maxLength={1000}
+          placeholder="Describe your farming question or problem..."
+          style={{ width: "100%", minHeight: "110px", padding: "12px", border: "1px solid #dce2d8", borderRadius: "9px", resize: "vertical", boxSizing: "border-box" }}
+        />
+      </label>
+
+      <button
+        type="submit"
+        style={{ padding: "12px 18px", border: 0, borderRadius: "9px", background: "#247a4a", color: "#fff", fontWeight: 700, cursor: "pointer" }}
+      >
+        Submit Question
+      </button>
+      <small style={{ color: "#68776c" }}>
+        Demo mode: questions are saved in this browser only, not shared with other users.
+      </small>
+    </form>
     {[
       ["🫚 Ginger","Leaf spots detected — consult a local agricultural expert.","12 replies"],
       ["🥔 Potato","Share storage and harvesting tips.","8 replies"],
