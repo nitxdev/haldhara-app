@@ -1,5 +1,3 @@
-﻿.auth-page{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;background:#fbf8ef;color:#243b2b;font-family:'DM Sans','Noto Sans Devanagari',sans-serif}.auth-visual{position:relative;overflow:hidden;min-height:100vh;padding:36px clamp(28px,5vw,76px);display:flex;flex-direction:column;background:linear-gradient(145deg,#eaf0df,#d6e6d2 55%,#b4d0a8)}.auth-brand{display:flex;align-items:center;gap:10px;z-index:2;color:#704024;font-size:24px;letter-spacing:1px}.auth-brand>span{width:45px;height:45px;border-radius:14px;display:grid;place-items:center;background:#fff9e9;color:#2f7044}.auth-visual-copy{position:relative;z-index:2;margin-top:auto;margin-bottom:45px;max-width:510px}.auth-eyebrow{font-size:10px;letter-spacing:1.8px;font-weight:800;color:#63805a}.auth-visual-copy h1{font-size:clamp(43px,5vw,70px);letter-spacing:-3px;line-height:1.08;margin:16px 0;color:#23462f}.auth-visual-copy p{max-width:440px;font-size:14px;line-height:1.9;color:#566d54}.auth-trust{display:flex;align-items:center;gap:8px;margin-top:25px;font-size:11px;font-weight:700;color:#416b45}.auth-landscape{position:absolute;inset:12% -10% 20% 4%;opacity:.82}.auth-sun{position:absolute;top:9%;right:22%;width:92px;height:92px;background:#f2bf83;border-radius:50%}.auth-mountain{position:absolute;bottom:28%;width:0;height:0;border-left:clamp(140px,18vw,260px) solid transparent;border-right:clamp(140px,18vw,260px) solid transparent;border-bottom:clamp(180px,25vw,350px) solid #90b49a}.auth-mountain:after{content:"";position:absolute;left:-38px;top:30px;border-left:38px solid transparent;border-right:38px solid transparent;border-bottom:48px solid #f7f6e9}.auth-mountain.one{left:-10%;}.auth-mountain.two{right:-12%;bottom:22%;border-bottom-color:#729d7c;border-left-width:clamp(170px,22vw,310px);border-right-width:clamp(170px,22vw,310px)}.auth-field{position:absolute;bottom:0;left:-5%;width:120%;height:37%;border-radius:50% 50% 0 0;background:repeating-linear-gradient(165deg,#739b5a 0 18px,#9ebf78 19px 31px,#4d7a49 32px 47px)}.auth-farmer{position:absolute;right:25%;bottom:14%;font-size:clamp(55px,7vw,100px);filter:drop-shadow(0 5px 5px #28432b30)}.auth-form-side{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:35px 24px;position:relative}.auth-card{width:100%;max-width:430px;background:#fffdf8;border:1px solid #eee8dc;border-radius:23px;padding:clamp(24px,4vw,42px);box-shadow:0 22px 60px #3c4d3010}.auth-mobile-brand{display:none}.auth-card h2{font-size:32px;letter-spacing:-1.3px;margin:11px 0 8px;color:#263d2c}.auth-subtitle{font-size:13px;line-height:1.7;color:#7a8175;margin:0 0 23px}.auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:5px;background:#f1efe6;border-radius:12px;margin-bottom:23px}.auth-tabs button{border:0;background:transparent;padding:11px 5px;border-radius:9px;font-size:12px;font-weight:700;color:#71786c}.auth-tabs button.selected{background:#fffdf8;color:#2c633d;box-shadow:0 2px 7px #273a2310}.auth-form{display:flex;flex-direction:column;gap:15px}.auth-form label{display:flex;flex-direction:column;gap:8px;font-size:12px;font-weight:700;color:#354635}.auth-input{height:48px;display:flex;align-items:center;gap:10px;padding:0 13px;border:1px solid #e6e4da;background:#fff;border-radius:10px;color:#74836f}.auth-input:focus-within{border-color:#6c9a6b;box-shadow:0 0 0 3px #6c9a6b1c}.auth-input input{border:0;outline:0;min-width:0;flex:1;background:transparent;font-size:12px;color:#263d2c}.auth-input input::placeholder{color:#a1a59a}.auth-input input:disabled{opacity:.65}.auth-submit{height:49px;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:5px;border:0;border-radius:11px;background:#286640;color:#fff;font-size:13px;font-weight:800;box-shadow:0 6px 15px #28664020}.auth-submit:hover{background:#205533}.auth-submit:disabled{opacity:.65;cursor:wait}.auth-message{padding:11px 12px;border-radius:9px;background:#f8eee0;color:#75502e;font-size:12px;line-height:1.6;overflow-wrap:anywhere}.auth-back{border:0;background:transparent;color:#397248;font-size:12px;font-weight:700;padding:5px}.auth-footnote{display:flex;align-items:flex-start;gap:7px;font-size:10px;line-height:1.6;color:#7e8678;margin:20px 0 0}.auth-footnote svg{flex-shrink:0;color:#548356}.auth-footer{margin-top:25px;font-size:10px;color:#899080;text-align:center}.auth-loading{min-height:100vh;display:flex;align-items:center;justify-content:center;gap:12px;background:#fbf8ef;color:#286640;font-weight:700}
-@media(max-width:760px){.auth-page{grid-template-columns:1fr}.auth-visual{display:none}.auth-form-side{min-height:100vh;padding:24px 18px;background:radial-gradient(ellipse at 80% 0%,#e5eddc,transparent 45%),#fbf8ef}.auth-mobile-brand{display:flex;align-items:center;gap:8px;color:#704024;font-size:20px;font-weight:800;margin-bottom:30px}.auth-mobile-brand svg{color:#397248}.auth-card{padding:25px 21px;border-radius:19px}.auth-card h2{font-size:29px}.auth-footer{margin-top:19px}}
 
 /* Haldhara authentic local-photo login design */
 .auth-visual {
@@ -8,27 +6,45 @@
     url('/images/haldhara-login-bg.jpg') center center / cover no-repeat !important;
   color: #fff;
 }
-.auth-landscape { display: none !important; }
-.auth-brand { color: #fff !important; }
-.auth-brand > img {
-  width: 57px;
-  height: 57px;
-  object-fit: contain;
-  border-radius: 50%;
-  background: #fffdf5;
-  padding: 2px;
-  border: 2px solid rgba(255,255,255,.8);
+
+.auth-landscape {
+  display: none !important;
 }
+
+.auth-brand {
+  color: #fff !important;
+  gap: 12px;
+}
+
+.auth-brand > img {
+  display: block;
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  border: 0;
+}
+
 .auth-visual-copy .auth-eyebrow,
 .auth-visual-copy h1,
 .auth-visual-copy p,
-.auth-visual-copy .auth-trust { color: #fff !important; }
-.auth-visual-copy p { text-shadow: 0 1px 5px #18352388; }
-.auth-mobile-brand img {
-  width: 38px;
-  height: 38px;
-  object-fit: contain;
-  border-radius: 50%;
-  background: #fffdf5;
-  border: 1px solid #dfe8d8;
+.auth-visual-copy .auth-trust {
+  color: #fff !important;
 }
+
+.auth-visual-copy p {
+  text-shadow: 0 1px 5px #18352388;
+}
+
+.auth-mobile-brand img {
+  display: block;
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  border-radius: 0;
+  background: transparent;
+  border: 0;
+}
+

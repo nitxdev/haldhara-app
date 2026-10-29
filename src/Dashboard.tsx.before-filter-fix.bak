@@ -1,0 +1,928 @@
+import CropCalendar from "./features/crop-calendar/CropCalendar";
+import GovernmentSchemes from "./features/government-schemes/GovernmentSchemes";
+import DiseaseSupport from "./features/disease-support/DiseaseSupport";
+import WeatherAlerts from "./features/weather/WeatherAlerts";
+import CropRecommendation from "./features/crop-recommendation/CropRecommendation";
+import MarketIntelligence from "./features/market-intelligence/MarketIntelligence";
+import BookForFeast from "./features/feast/BookForFeast";
+import {
+  Sprout, House, ShoppingCart, Users, Truck,
+  ChartNoAxesColumnIncreasing, Flame, MessageCircle, UserRound,
+  CloudSun, Package, FileText, Play, Search, Globe, Bell,
+  ChevronDown, ArrowUpRight, MapPin, Leaf,
+  CircleHelp, Menu, X
+} from "lucide-react";
+import { useState , useEffect} from "react";
+import "./App.css";
+
+const nav = [
+  { icon: House, label: "Home" },
+  { icon: Sprout, label: "Sell Crop" },
+  { icon: Sprout, label: "My Listings" },
+  { icon: Sprout, label: "My Offers" },
+  { icon: Sprout, label: "Buyer Offers" },
+  { icon: ShoppingCart, label: "Find Buyers" },
+  { icon: Users, label: "Book for Feast" },
+  { icon: Truck, label: "Transport" },
+  { icon: ChartNoAxesColumnIncreasing, label: "Market Price" },
+  { icon: Flame, label: "Trending Crops", badge: "New" },
+  { icon: MessageCircle, label: "Community" },
+  { icon: UserRound, label: "Expert Advice" },
+  { icon: CloudSun, label: "Weather" },
+  { icon: Package, label: "My Orders" },
+  { icon: FileText, label: "Government Schemes" },
+  { icon: Play, label: "Learn Haldhara", badge: "New", special: true },
+];
+
+const crops = [
+  { name: "Ginger", emoji: "🫚", price: 85, change: 12, demand: "Very High" },
+  { name: "Potato", emoji: "🥔", price: 22, change: 8, demand: "High" },
+  { name: "Pineapple", emoji: "🍍", price: 35, change: 10, demand: "High" },
+  { name: "Orange", emoji: "🍊", price: 48, change: 6, demand: "Moderate" },
+  { name: "Kiwi", emoji: "🥝", price: 120, change: 15, demand: "Rising Fast" },
+];
+
+const actions = [
+  { icon: Leaf, title: "Sell My Crop", subtitle: "अपनी फसल बेचें", art: "🧺", color: "mint" },
+  { icon: ShoppingCart, title: "Find Buyers", subtitle: "खरीदार खोजें", art: "🏪", color: "sky" },
+  { icon: Users, title: "Book for Feast (People)", subtitle: "समारोह के लिए आपूर्ति", art: "🥬", color: "peach" },
+  { icon: Truck, title: "Share Transport", subtitle: "परिवहन साझा करें", art: "🚚", color: "lavender" },
+];
+
+type DashboardOrder = {
+  _id?: string;
+  id?: string;
+  orderId?: string;
+  cropName?: string;
+  quantityKg?: number;
+  pricePerKg?: number;
+  totalAmount?: number;
+  status?: string;
+  deliveryAddress?: string;
+  createdAt?: string;
+  notes?: string;
+};
+
+const tutorials = [
+  { title: "Login & Profile", subtitle: "खाता बनाना सीखें", art: "📱" },
+  { title: "Add Crop Listing", subtitle: "फसल सूची डालना", art: "🌱" },
+  { title: "Find Buyers", subtitle: "खरीदार ढूँढना", art: "🔎" },
+  { title: "Book Transport", subtitle: "परिवहन बुक करना", art: "🚛" },
+  { title: "Use Community", subtitle: "चर्चा मंच का उपयोग", art: "👨‍🌾" },
+  { title: "Get Expert Advice", subtitle: "Expert Advice", art: "🧑‍🌾" },
+];
+
+import CropListingForm from "./features/crop-listings/CropListingForm";
+import MyCropListings from "./features/crop-listings/MyCropListings";
+import BuyerMarketplace from "./features/buyer-marketplace/BuyerMarketplace";
+import BuyerRequirementForm from "./features/buyer-requirements/BuyerRequirementForm";
+import BuyerRequirementsList from "./features/buyer-requirements/BuyerRequirementsList";
+import MyRequirements from "./features/buyer-requirements/MyRequirements";
+import SmartMatching from "./features/matching/SmartMatching";
+import MyOffers from "./features/offers/MyOffers";
+import BuyerReceivedOffers from "./features/offers/BuyerReceivedOffers";
+function Dashboard({ onLogout }: { onLogout: () => void }) {
+  const [profileName, setProfileName] = useState("Haldhara User");
+  const [profileRole, setProfileRole] = useState("farmer");
+  const [orders, setOrders] = useState<DashboardOrder[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [ordersError, setOrdersError] = useState("");
+  const [ordersReloadKey, setOrdersReloadKey] = useState(0);
+
+  useEffect(() => {
+    const token = localStorage.getItem("haldhara_token");
+    if (!token) return;
+
+    fetch("http://localhost:5001/api/auth/me", {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(response => {
+        if (!response.ok) throw new Error("Profile request failed");
+        return response.json();
+      })
+      .then(result => {
+        // Support both API response shapes: data.user and data directly.
+        const user = result?.data?.user ?? result?.data;
+        const name = user?.name;
+        const role = user?.role;
+
+        if (typeof name === "string" && name.trim()) {
+          setProfileName(name.trim());
+        }
+
+        if (typeof role === "string" && role.trim()) {
+          setProfileRole(role.trim().toLowerCase());
+        }
+      })
+      .catch(error => console.error("Could not load profile name:", error));
+  }, []);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+
+  const [active, setActive] = useState("Home");
+  const [filter, setFilter] = useState("Highest Demand");
+  const [search, setSearch] = useState("");
+  const [language, setLanguage] = useState("English");
+  const [voiceTranslationText, setVoiceTranslationText] = useState("");
+  const [voiceTranslationBusy, setVoiceTranslationBusy] = useState(false);
+
+  // VOICE_TRANSLATE_BIDIRECTIONAL
+  const startVoiceTranslate = () => {
+    const SpeechAPI = (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+
+    if (!SpeechAPI) {
+      alert("Please use Chrome or Edge for voice recognition.");
+      return;
+    }
+
+    const toEnglish = language === "English";
+    const recognition = new SpeechAPI();
+    recognition.lang = toEnglish ? "hi-IN" : "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => setVoiceTranslationBusy(true);
+    recognition.onerror = () => {
+      setVoiceTranslationBusy(false);
+      alert("Voice recognition failed. Please try again.");
+    };
+
+    recognition.onresult = async (event: any) => {
+      const spoken = event.results?.[0]?.[0]?.transcript?.trim();
+      if (!spoken) {
+        setVoiceTranslationBusy(false);
+        return;
+      }
+
+      try {
+        const pair = toEnglish ? "hi|en" : "en|hi";
+        const url = "https://api.mymemory.translated.net/get?q=" +
+          encodeURIComponent(spoken) + "&langpair=" + pair;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Translation request failed");
+
+        const data = await response.json();
+        const translated = data?.responseData?.translatedText;
+        if (!translated) throw new Error("Empty translation");
+
+        setVoiceTranslationText(translated);
+        const utterance = new SpeechSynthesisUtterance(translated);
+        utterance.lang = toEnglish ? "en-US" : "hi-IN";
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+      } catch {
+        alert("Translation failed. Check your internet connection.");
+      } finally {
+        setVoiceTranslationBusy(false);
+      }
+    };
+
+    recognition.onend = () => setVoiceTranslationBusy(false);
+    recognition.start();
+  };
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [region, setRegion] = useState("Arunachal Pradesh");
+  const [selectedTutorial, setSelectedTutorial] = useState<{ title: string; subtitle: string; art: string } | null>(null);
+  const [tutorialStep, setTutorialStep] = useState(0);
+  const [tutorialPlaying, setTutorialPlaying] = useState(false);
+
+  useEffect(() => {
+    if (active !== "My Orders") return;
+
+    const token = localStorage.getItem("haldhara_token");
+    if (!token) {
+      setOrders([]);
+      setOrdersError("Please log in to view your orders.");
+      setOrdersLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    setOrdersLoading(true);
+    setOrdersError("");
+
+    fetch("http://localhost:5001/api/orders/mine", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(result?.message || result?.error || `Could not load orders (${response.status})`);
+        }
+        return result;
+      })
+      .then((result) => {
+        const list = Array.isArray(result)
+          ? result
+          : Array.isArray(result?.data)
+            ? result.data
+            : Array.isArray(result?.orders)
+              ? result.orders
+              : Array.isArray(result?.data?.orders)
+                ? result.data.orders
+                : [];
+        setOrders(list as DashboardOrder[]);
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        setOrdersError(error instanceof Error ? error.message : "An unexpected error occurred.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setOrdersLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [active, ordersReloadKey]);
+
+  useEffect(() => {
+    if (!tutorialPlaying || !selectedTutorial) return;
+    const timer = window.setTimeout(() => {
+      setTutorialStep((current) => {
+        if (current >= 2) {
+          setTutorialPlaying(false);
+          return current;
+        }
+        return current + 1;
+      });
+    }, 1800);
+    return () => window.clearTimeout(timer);
+  }, [tutorialPlaying, selectedTutorial, tutorialStep]);
+
+  const filteredCrops = crops
+    .filter(c =>
+      c.name.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a, b) => {
+      const demandRank: Record<string, number> = {
+        "Very High": 4,
+        "High": 3,
+        "Rising Fast": 2,
+        "Moderate": 1,
+      };
+
+      if (filter === "Rising Price" || filter === "For Next Season") {
+        return b.change - a.change;
+      }
+
+      if (filter === "Highest Demand" || filter === "Best Selling") {
+        return (demandRank[b.demand] ?? 0) - (demandRank[a.demand] ?? 0);
+      }
+
+      if (filter === "Seasonal") {
+        const seasonalRank: Record<string, number> = {
+          "Ginger": 5,
+          "Pineapple": 4,
+          "Potato": 3,
+          "Orange": 2,
+          "Kiwi": 1,
+        };
+        return (seasonalRank[b.name] ?? 0) - (seasonalRank[a.name] ?? 0);
+      }
+
+      return 0;
+    });
+
+  return (
+    <div className="dashboard">
+      <aside className={"sidebar " + (menuOpen ? "sidebar-open" : "")}>
+        <a className="logo-block" href="#home" onClick={() => setActive("Home")}>
+          <div className="logo-emblem"><img src="/images/haldhara-logo.svg" alt="Haldhara logo" /></div>
+          <strong>HALDHARA</strong>
+          <b className="hindi-tagline">Our Farmers, Our Future</b>
+        </a>
+        <nav className="side-nav">
+          {nav.map(({ icon: Icon, label, badge, special }) => (
+            <button key={label}
+              className={"nav-item " + (active === label ? "nav-active " : "") + (special ? "nav-learn " : "")}
+              onClick={() => { setActive(label); setMenuOpen(false); }}>
+              <Icon size={21} strokeWidth={2.2} />
+              <span>{label}</span>
+              {badge && <b className={"nav-badge " + (special ? "red-badge" : "")}>{badge}</b>}
+            </button>
+          ))}
+        </nav>
+        <div className="sidebar-landscape"><span>🌲</span><span>🏞️</span><span>🌲</span></div>
+      </aside>
+
+      {active === "Home" && (
+<main className="main-panel" id="home">
+        <header className="topbar">
+          <button className="mobile-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Open menu">
+            {menuOpen ? <X /> : <Menu />}
+          </button>
+          <div className="top-spacer" />
+          <button className="top-pill" type="button" onClick={startVoiceTranslate} disabled={voiceTranslationBusy} title="Speak to translate">
+  {voiceTranslationBusy ? "Listening..." : "🎙 Voice Translate"}
+</button>
+          <button className="top-pill" onClick={() => setLanguage(language === "English" ? "Hindi" : "English")}>
+            <Globe size={19} /> {language} <ChevronDown size={15} />
+          </button>
+          <button className="notification" aria-label="Notifications"><Bell size={21}/><span>3</span></button>
+          <button className="profile-pill" onClick={() => setProfileMenuOpen((open) => !open)} title="Profile menu" aria-expanded={profileMenuOpen}>
+            <span className="avatar">{profileRole === "buyer" ? "🛒" : profileRole === "transporter" ? "🚚" : profileRole === "expert" ? "🧑‍🔬" : "👨🏻‍🌾"}</span>
+            <span className="profile-name">
+              {profileName}
+              <small>{profileRole.charAt(0).toUpperCase() + profileRole.slice(1)}</small>
+            </span>
+            <ChevronDown size={15}/>
+          </button>
+        {profileMenuOpen && (
+  <div className="profile-menu">
+    <button type="button" onClick={() => { setProfileMenuOpen(false); onLogout(); }}>
+      Log out
+    </button>
+  </div>
+)}
+
+        </header>
+        {voiceTranslationText && (
+          <section role="status" style={{ margin: "12px 0", padding: "14px", background: "#eaf5e9", color: "#234b35", borderRadius: 12 }}>
+            <b>Translation</b>
+            <p>{voiceTranslationText}</p>
+            <button type="button" onClick={() => setVoiceTranslationText("")}>Close</button>
+          </section>
+        )}
+
+        <section className="scenic-banner">
+          <div className="banner-foliage">🌿</div>
+          <div className="banner-brand">
+            <div className="banner-emblem"><img src="/images/haldhara-logo.svg" alt="Haldhara logo" /></div>
+            <div>
+              <h1>HALDHARA</h1>
+              <h2>Our Farmers, Our Future</h2>
+              <p>Connecting Arunachal's Farmers to Better Opportunities</p>
+            </div>
+          </div>
+          <div className="banner-values">
+            <span><Sprout/> Fair Price</span><i/>
+            <span><Users/> Direct Buyers</span><i/>
+            <span><Users/> Strong Community</span><i/>
+            <span><Leaf/> Sustainable Future</span>
+          </div>
+          <div className="mountain-art" aria-hidden="true">
+            <div className="sun-art"/><div className="peak peak-a"/><div className="peak peak-b"/>
+            <div className="temple">🏯</div><div className="banner-farmer">🧑‍🌾</div>
+            <div className="field-lines"/>
+          </div>
+        </section>
+
+        <section className="search-area">
+          <form className="search-box" onSubmit={e => {
+            e.preventDefault();
+            const q = search.trim().toLowerCase();
+            if (!q) return;
+
+            if (/price|prices|rate|market|mandi/.test(q)) {
+              setActive("Market Price");
+            } else if (/buyer|buyers|sell|purchase|buy/.test(q)) {
+              setActive("Find Buyers");
+            } else if (/transport|truck|vehicle|delivery/.test(q)) {
+              setActive("Transport");
+            } else if (/weather|rain|forecast/.test(q)) {
+              setActive("Weather");
+            } else if (/community|discussion|farmer/.test(q)) {
+              setActive("Community");
+            } else if (/expert|advice|help|disease|pest|leaf/.test(q)) {
+              setActive("Expert Advice");
+            } else {
+              setActive("Trending Crops");
+            }
+          }}>
+            <Search size={25}/>
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search crops, prices, buyers, transport or farming questions..." aria-label="Search Haldhara"/>
+            <button type="submit">Search</button>
+          </form>
+          <div className="crop-chips">
+            {["🫚 Ginger","🥔 Potato","🍍 Pineapple","🍊 Orange","🥝 Kiwi","🟠 Turmeric","••• More"].map(c => (
+              <button key={c} onClick={() => setSearch(c.split(" ").slice(1).join(" ") === "More" ? "" : c.split(" ").slice(1).join(" "))}>{c}</button>
+            ))}
+          </div>
+        </section>
+
+        <section className="action-grid">
+          {actions.map(({ icon: Icon, title, subtitle, art, color }) => (
+            <button className={"action-card " + color} key={title} onClick={() => setActive(title)}>
+              <span className="action-icon"><Icon size={24}/></span>
+              <span className="action-text"><b>{title}</b><span>{subtitle}</span></span>
+              <span className="action-art">{art}</span>
+              <span className="action-arrow"><ArrowUpRight size={19}/></span>
+            </button>
+          ))}
+        </section>
+
+        <section className="shortcut-grid">
+          <button onClick={() => setActive("Market Price")}><span className="shortcut-icon green"><ChartNoAxesColumnIncreasing/></span><span><b>Market Price</b><small>Today's Market Prices</small></span></button>
+          <button onClick={() => setActive("Trending Crops")}><span className="shortcut-icon red"><Flame/></span><span><b>Trending Crops</b><small>Most In-Demand Crops</small></span></button>
+          <button onClick={() => setActive("Community")}><span className="shortcut-icon blue"><MessageCircle/></span><span><b>Farmer Community</b><small>Farmer Community</small></span></button>
+          <button onClick={() => setActive("Expert Advice")}><span className="shortcut-icon brown"><UserRound/></span><span><b>Expert Advice</b><small>Expert Advice</small></span></button>
+          <button onClick={() => setActive("Weather")}><span className="shortcut-icon violet"><CloudSun/></span><span><b>Weather & Alerts</b><small>Weather and Alerts</small></span></button>
+        </section>
+
+        <section className="market-layout">
+          <div className="left-column">
+            <article className="panel trending-panel">
+              <div className="panel-heading">
+                <div className="panel-title"><Flame className="flame-icon"/><h3>Trending Crops</h3><CircleHelp size={15}/></div>
+                <select aria-label="Region" value={region} onChange={e => setRegion(e.target.value)}>
+                  <option>Arunachal Pradesh</option><option>Assam</option><option>Manipur</option><option>Meghalaya</option><option>Nagaland</option><option>Mizoram</option><option>Tripura</option><option>Sikkim</option>
+                </select>
+                <button className="view-all" onClick={() => setActive("Trending Crops")}>View All <ArrowUpRight size={16}/></button>
+              </div>
+              <div className="filter-row">
+                {["Highest Demand","Rising Price","Best Selling","Seasonal","For Next Season"].map(f => <button key={f} className={filter === f ? "filter-active" : ""} onClick={() => setFilter(f)}>{f}</button>)}
+              </div>
+              <div className="crop-grid">
+                {filteredCrops.map((crop, i) => (
+                  <div className="crop-card" key={crop.name}>
+                    <span className="rank">{i+1}</span>
+                    <div className="crop-picture">{crop.emoji}</div>
+                    <b>{crop.name}</b>
+                    <strong>₹ {crop.price} <small>/kg</small></strong>
+                    <span className="crop-change">↑ {crop.change}%</span>
+                    <div className="demand-bar"><i style={{width: `${Math.min(95, crop.change * 6)}%`}}/></div>
+                    <small className="demand-label">{crop.demand} Demand</small>
+                  </div>
+                ))}
+                {filteredCrops.length === 0 && <p className="empty-crops">No matching crops. Try another search.</p>}
+              </div>
+              <p className="data-note">Illustrative demo prices — connect verified market data before relying on them.</p>
+            </article>
+
+            <section
+              className="learn-panel"
+              id="learn-haldhara"
+              style={{ border: "1px solid #e7e2d8", borderRadius: 18, boxShadow: "0 4px 18px rgba(45, 58, 42, 0.05)", background: "linear-gradient(135deg, #fffdf8 0%, #ffffff 100%)", padding: 16 }}
+            >
+              <div className="learn-heading">
+                <span className="learn-play" style={{ background: "#e5f5e9", color: "#218653", borderRadius: 12 }}><Play size={21} fill="currentColor"/></span>
+                <h3>Learn Haldhara</h3>
+                <p>Step-by-step guide to use all features</p>
+                <button onClick={() => { setSelectedTutorial(tutorials[0]); setTutorialStep(0); setTutorialPlaying(false); }}>Play Demo <Play size={14} fill="currentColor" /></button>
+              </div>
+              <div className="tutorial-row">
+                {tutorials.map((t, i) => (
+                  <button
+                    className="tutorial-card"
+                    key={t.title}
+                    onClick={() => { setSelectedTutorial(t); setTutorialStep(0); setTutorialPlaying(false); }}
+                    style={{ border: "1px solid #ece7dc", borderRadius: 14, background: "#ffffff", transition: "transform 160ms ease, box-shadow 160ms ease", cursor: "pointer" }}
+                    title={`Play ${t.title} demo`}
+                  >
+                    <span className="tutorial-number">{i+1}</span>
+                    <span className="tutorial-art">{t.art}</span>
+                    <b>{t.title}</b><small>{t.subtitle}</small>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#218653", fontSize: 11, fontWeight: 700, marginTop: 7 }}><Play size={11} fill="currentColor" /> Try demo</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+          </div>
+
+          <aside className="right-column">
+            <article className="panel highlights-panel">
+              <div className="panel-heading"><div className="panel-title"><ChartNoAxesColumnIncreasing className="green-icon"/><h3>Today's Market Highlights</h3></div><button className="view-all" onClick={() => setActive("Market Price")}>View All</button></div>
+              <div className="price-table">
+                <div className="price-row table-head"><span>Crop</span><span>Avg. Price (₹/kg)</span><span>Change</span><span>Demand</span></div>
+                {crops.map(c => <div className="price-row" key={c.name}><span>{c.name}</span><span>{c.price}</span><b>↑ {c.change}%</b><span className={"demand-pill " + c.demand.toLowerCase().replace(" ","-")}>{c.demand}</span></div>)}
+              </div>
+              <p className="data-note">Demo values only; live market integration pending.</p>
+            </article>
+
+            <article className="panel weather-panel">
+              <div className="panel-heading"><div className="panel-title"><CloudSun className="weather-icon"/><h3>Your Area Weather</h3></div><span className="location-label"><MapPin size={13}/> Itanagar</span></div>
+              <div className="weather-content"><span className="weather-art">🌤️</span><div className="temperature">24°C<small>Partly cloudy</small></div><div className="weather-stats"><span>🌧 Rain <b>20%</b></span><span>💧 Humidity <b>78%</b></span><span>〰 Wind <b>8 km/h</b></span></div></div>
+              <button className="weather-link" onClick={() => setActive("Weather")}>View Details <ArrowUpRight size={14}/></button>
+            </article>
+
+            <article className="panel community-panel">
+              <div className="mini-heading"><span>🗣 Latest Community Discussions</span><button onClick={() => setActive("Community")}>View All</button></div>
+              <div className="discussion"><span>🫚</span><div><b>Ginger me patton par daag - kya karen?</b><small>12 replies · 2 hours ago</small></div></div>
+              <div className="discussion"><span>🥔</span><div><b>Potato storage ka best tarika</b><small>8 replies · 5 hours ago</small></div></div>
+              <div className="discussion"><span>🍍</span><div><b>Pineapple ke liye sahi khaad kaun si?</b><small>5 replies · 1 day ago</small></div></div>
+            </article>
+
+            <article className="panel expert-panel">
+              <div className="mini-heading"><span>👨‍🌾 Expert Corner</span><button onClick={() => setActive("Expert Advice")}>View All</button></div>
+              <div className="expert-row"><span>🌿</span><div><b>Ask a Scientist</b><small>Get answers from agricultural experts</small></div></div>
+              <div className="expert-row"><span>📷</span><div><b>Crop Disease Help</b><small>Upload a photo and get expert advice</small></div></div>
+              <div className="expert-row"><span>🎙</span><div><b>Live Q&A Sessions</b><small>Join upcoming expert sessions</small></div></div>
+            </article>
+          </aside>
+        </section>
+
+        <footer className="dashboard-footer"><span><Sprout size={17}/> HALDHARA · Our Farmers, Our Future</span><span>Rooted in the land. Growing together.</span></footer>
+      </main>) }
+          {active === "Transport" && (
+  <section style={{padding:"24px",margin:"16px",background:"#fffdf5",borderRadius:"16px",color:"#234b35"}}>
+    <button onClick={() => setActive("Home")}>← Back to Home</button>
+    <h2>🚚 Shared Farm Transport</h2>
+    <p>Demo transport board — confirm availability and prices directly with the provider.</p>
+
+    <form
+      onSubmit={e => {
+        e.preventDefault();
+        const form = e.currentTarget;
+        const data = new FormData(form);
+        const request = {
+          id: Date.now(),
+          pickup: String(data.get("pickup") || ""),
+          destination: String(data.get("destination") || ""),
+          crop: String(data.get("crop") || ""),
+          quantityKg: Number(data.get("quantityKg")),
+          vehicle: String(data.get("vehicle") || ""),
+          date: String(data.get("date") || ""),
+          budget: Number(data.get("budget") || 0),
+          contact: String(data.get("contact") || ""),
+          createdAt: new Date().toISOString()
+        };
+
+        const previous = JSON.parse(
+          localStorage.getItem("haldharaTransportRequests") || "[]"
+        );
+
+        localStorage.setItem(
+          "haldharaTransportRequests",
+          JSON.stringify([request, ...previous])
+        );
+
+        alert("Transport request saved on this device.");
+        form.reset();
+      }}
+      style={{
+        margin: "20px 0",
+        padding: "22px",
+        background: "#ffffff",
+        border: "1px solid #e5e7dc",
+        borderRadius: "16px",
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+        gap: "16px"
+      }}
+    >
+      <h3 style={{gridColumn: "1 / -1", margin: 0}}>Share a Transport Request</h3>
+
+      <label>Pickup Location
+        <input name="pickup" required placeholder="e.g. Ziro"
+          style={{display:"block",width:"100%",padding:"12px",marginTop:"6px",boxSizing:"border-box"}} />
+      </label>
+
+      <label>Destination
+        <input name="destination" required placeholder="e.g. Itanagar"
+          style={{display:"block",width:"100%",padding:"12px",marginTop:"6px",boxSizing:"border-box"}} />
+      </label>
+
+      <label>Crop
+        <select name="crop" required defaultValue=""
+          style={{display:"block",width:"100%",padding:"12px",marginTop:"6px",boxSizing:"border-box"}}>
+          <option value="" disabled>Select crop</option>
+          <option>Ginger</option>
+          <option>Potato</option>
+          <option>Pineapple</option>
+          <option>Orange</option>
+          <option>Kiwi</option>
+          <option>Turmeric</option>
+          <option>Rice</option>
+          <option>Maize</option>
+          <option>Other</option>
+        </select>
+      </label>
+
+      <label>Quantity (kg)
+        <input name="quantityKg" type="number" min="1" required placeholder="e.g. 200"
+          style={{display:"block",width:"100%",padding:"12px",marginTop:"6px",boxSizing:"border-box"}} />
+      </label>
+
+      <label>Vehicle Type
+        <select name="vehicle" required defaultValue=""
+          style={{display:"block",width:"100%",padding:"12px",marginTop:"6px",boxSizing:"border-box"}}>
+          <option value="" disabled>Select vehicle</option>
+          <option>Pickup Truck</option>
+          <option>Mini Truck</option>
+          <option>Small Goods Vehicle</option>
+          <option>Large Truck</option>
+          <option>Shared Transport</option>
+        </select>
+      </label>
+
+      <label>Required Date
+        <input name="date" type="date" required min={new Date().toISOString().slice(0,10)}
+          style={{display:"block",width:"100%",padding:"12px",marginTop:"6px",boxSizing:"border-box"}} />
+      </label>
+
+      <label>Estimated Budget (INR)
+        <input name="budget" type="number" min="0" placeholder="Optional"
+          style={{display:"block",width:"100%",padding:"12px",marginTop:"6px",boxSizing:"border-box"}} />
+      </label>
+
+      <label>Contact Number
+        <input name="contact" type="tel" required pattern="[0-9+\-\s]{7,18}" placeholder="Enter contact number"
+          style={{display:"block",width:"100%",padding:"12px",marginTop:"6px",boxSizing:"border-box"}} />
+      </label>
+
+      <button type="submit"
+        style={{
+          gridColumn:"1 / -1",
+          padding:"14px",
+          background:"#754326",
+          color:"#ffffff",
+          border:0,
+          borderRadius:"10px",
+          cursor:"pointer",
+          fontWeight:700
+        }}>
+        Submit Transport Request
+      </button>
+    </form>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:"16px"}}>
+      {[
+        ["Itanagar → Naharlagun","Pickup truck","Shared load available","₹800 / trip (illustrative)"],
+        ["Ziro → Itanagar","Mini truck","Vegetable delivery","₹1,200 / trip (illustrative)"],
+        ["Pasighat local","Small goods vehicle","Contact driver to coordinate","Price on request"]
+      ].map(([route,vehicle,details,price]) => <article key={route} style={{padding:"18px",background:"#fff",border:"1px solid #dce7dc",borderRadius:"12px"}}>
+        <h3>{route}</h3><p>{vehicle}</p><p>{details}</p><b>{price}</b>
+      </article>)}
+    </div>
+  </section>
+)}
+{active === "Market Price" && <MarketIntelligence />}
+{active === "Trending Crops" && <CropRecommendation />}
+{active === "Community" && (
+  <section style={{padding:"24px",margin:"16px",background:"#fffdf5",borderRadius:"16px",color:"#234b35"}}>
+    <button onClick={() => setActive("Home")}>← Back to Home</button>
+    <h2>🧑‍🌾 Farmer Community</h2>
+    <p>Demo discussions. Verify farming advice with a qualified local expert.</p>
+    {[
+      ["🫚 Ginger","Leaf spots detected — consult a local agricultural expert.","12 replies"],
+      ["🥔 Potato","Share storage and harvesting tips.","8 replies"],
+      ["🍍 Pineapple","Soil preparation aur fertilizer ke baare mein discussion.","5 replies"]
+    ].map(([topic,body,replies]) => <article key={topic} style={{padding:"16px",marginTop:"12px",background:"#fff",border:"1px solid #dce7dc",borderRadius:"12px"}}>
+      <h3>{topic}</h3><p>{body}</p><small>{replies} · Sample discussion</small>
+    </article>)}
+  </section>
+)}
+{active === "Expert Advice" && <DiseaseSupport />}
+{active === "Weather" && <WeatherAlerts />}
+{active === "My Orders" && (
+  <section style={{ padding: "24px", margin: "16px", background: "#fffdf5", borderRadius: "16px", color: "#234b35" }}>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+      <div>
+        <h2 style={{ marginBottom: "6px" }}>📦 My Orders</h2>
+        <p style={{ marginTop: 0, color: "#68776c" }}>Your orders loaded from Haldhara's backend.</p>
+      </div>
+      <button
+        type="button"
+        onClick={() => setOrdersReloadKey((key) => key + 1)}
+        style={{ padding: "10px 14px", borderRadius: "10px", border: "1px solid #dce7dc", background: "#fff", cursor: "pointer" }}
+      >
+        Refresh orders
+      </button>
+    </div>
+    <button type="button" onClick={() => setActive("Home")} style={{ padding: "8px 0", border: 0, background: "transparent", color: "#267548", cursor: "pointer", fontWeight: 700 }}>
+      ← Back to Home
+    </button>
+    {ordersLoading ? (
+      <div role="status" style={{ padding: "28px 12px", textAlign: "center", color: "#68776c" }}>
+        <p style={{ fontSize: "18px" }}>⏳ Loading your orders…</p>
+      </div>
+    ) : ordersError ? (
+      <div role="alert" style={{ padding: "18px", marginTop: "14px", background: "#fff0ed", border: "1px solid #f1c8bf", borderRadius: "12px", color: "#8b3527" }}>
+        <b>Could not load orders</b>
+        <p style={{ marginBottom: "8px" }}>{ordersError}</p>
+        <p style={{ margin: 0, fontSize: "13px" }}>Check that the backend is running on port 5001 and you are logged in.</p>
+      </div>
+    ) : orders.length === 0 ? (
+      <div style={{ padding: "28px 18px", marginTop: "14px", textAlign: "center", background: "#fff", border: "1px dashed #cbdccf", borderRadius: "14px" }}>
+        <div style={{ fontSize: "38px" }}>🧺</div>
+        <h3 style={{ marginBottom: "8px" }}>No orders yet</h3>
+        <p style={{ color: "#68776c" }}>When you place an order or receive one for your crop, it will appear here.</p>
+        <button type="button" onClick={() => setActive("Find Buyers")} style={{ border: 0, borderRadius: "10px", padding: "10px 16px", background: "#247a4a", color: "#fff", cursor: "pointer", fontWeight: 700 }}>
+          Find crops
+        </button>
+      </div>
+    ) : (
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "16px", marginTop: "16px" }}>
+        {orders.map((order, index) => {
+          const orderKey = order._id || order.id || order.orderId || `order-${index}`;
+          const amount = Number(order.totalAmount ?? (Number(order.quantityKg || 0) * Number(order.pricePerKg || 0)));
+          const status = (order.status || "confirmed").replace(/_/g, " ");
+          return (
+            <article key={orderKey} style={{ padding: "18px", background: "#fff", border: "1px solid #dce7dc", borderRadius: "14px", boxShadow: "0 3px 12px rgba(35,75,53,0.04)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: "8px" }}>
+                <small style={{ color: "#758278" }}>Order #{String(orderKey).slice(-8)}</small>
+                <span style={{ display: "inline-block", padding: "5px 8px", borderRadius: "999px", background: status.toLowerCase() === "delivered" ? "#e2f5e7" : "#edf4e9", color: "#267548", fontSize: "11px", fontWeight: 800, textTransform: "capitalize" }}>{status}</span>
+              </div>
+              <h3 style={{ marginBottom: "10px" }}>{order.cropName || "Crop order"}</h3>
+              <p style={{ margin: "6px 0" }}>Quantity: <b>{Number(order.quantityKg || 0).toLocaleString("en-IN")} kg</b></p>
+              <p style={{ margin: "6px 0" }}>Price per kg: <b>₹{Number(order.pricePerKg || 0).toLocaleString("en-IN")}</b></p>
+              <p style={{ margin: "10px 0", fontSize: "18px" }}>Total: <b>₹{Number.isFinite(amount) ? amount.toLocaleString("en-IN") : "—"}</b></p>
+              {order.deliveryAddress && <p style={{ margin: "6px 0", color: "#68776c", fontSize: "13px" }}>📍 {order.deliveryAddress}</p>}
+              {order.createdAt && <small style={{ color: "#758278" }}>Placed: {new Date(order.createdAt).toLocaleDateString("en-IN")}</small>}
+            </article>
+          );
+        })}
+      </div>
+    )}
+  </section>
+)}
+{active === "Government Schemes" && <GovernmentSchemes />}
+{selectedTutorial && (
+        <div
+          role="presentation"
+          onClick={() => { setSelectedTutorial(null); setTutorialPlaying(false); }}
+          style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(18, 28, 22, 0.58)", display: "flex", alignItems: "center", justifyContent: "center", padding: 18 }}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${selectedTutorial.title} demo`}
+            onClick={(event) => event.stopPropagation()}
+            style={{ width: "min(560px, 100%)", background: "#fffdf8", borderRadius: 22, padding: 24, boxShadow: "0 24px 80px rgba(0,0,0,.25)", color: "#26352b" }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: 12 }}>
+              <div>
+                <div style={{ fontSize: 42, marginBottom: 8 }}>{selectedTutorial.art}</div>
+                <h2 style={{ margin: 0, fontSize: 22 }}>{selectedTutorial.title}</h2>
+                <p style={{ color: "#667268", marginTop: 6 }}>{selectedTutorial.subtitle} · Interactive demo</p>
+              </div>
+              <button aria-label="Close demo" onClick={() => { setSelectedTutorial(null); setTutorialPlaying(false); }} style={{ border: 0, borderRadius: 10, padding: "8px 12px", cursor: "pointer", background: "#f0eee7", fontSize: 20 }}>×</button>
+            </div>
+            <div style={{ background: "#f1f7ef", border: "1px solid #dcebd9", borderRadius: 16, padding: 18, margin: "18px 0" }}>
+              <div style={{ color: "#218653", fontSize: 12, fontWeight: 800, letterSpacing: 1 }}>DEMO STEP {tutorialStep + 1} OF 3</div>
+              <h3 style={{ margin: "8px 0" }}>
+                {tutorialStep === 0 ? "Explore the feature" : tutorialStep === 1 ? "Try the main action" : "Review before you finish"}
+              </h3>
+              <p style={{ margin: 0, lineHeight: 1.6 }}>
+                {selectedTutorial.title === "Login & Profile"
+                  ? ["Open your profile and check your name and role.", "Review your contact details and account options.", "Save changes only after checking the details."][tutorialStep]
+                  : selectedTutorial.title === "Add Crop Listing"
+                  ? ["Choose the crop you want to sell.", "Enter quantity, expected price and pickup location.", "Review the listing details before submitting."][tutorialStep]
+                  : selectedTutorial.title === "Find Buyers"
+                  ? ["Open Find Buyers to view available crop listings.", "Choose a crop and check quantity, price and location.", "Use Place Order only after reviewing the details."][tutorialStep]
+                  : selectedTutorial.title === "Book Transport"
+                  ? ["Open Transport to explore available transport options.", "Compare route, vehicle type and estimated cost.", "Confirm details with the provider before booking."][tutorialStep]
+                  : selectedTutorial.title === "Use Community"
+                  ? ["Open Community to browse farmer discussions.", "Choose a topic relevant to your crop or question.", "Share useful information respectfully."][tutorialStep]
+                  : ["Open Expert Advice to explore crop support.", "Select the crop issue and review the guidance.", "For serious crop damage, confirm advice with a local expert."][tutorialStep]}
+              </p>
+              <div style={{ display: "flex", gap: 6, marginTop: 16 }}>
+                {[0,1,2].map((step) => <span key={step} style={{ height: 5, flex: 1, borderRadius: 8, background: step <= tutorialStep ? "#218653" : "#d7e2d4" }} />)}
+              </div>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+              <button onClick={() => { setTutorialPlaying(false); setTutorialStep(0); }} style={{ border: "1px solid #d9e2d7", background: "#fff", borderRadius: 12, padding: "10px 14px", cursor: "pointer" }}>Restart</button>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button onClick={() => { setTutorialPlaying(!tutorialPlaying); if (tutorialStep === 2) setTutorialStep(0); }} style={{ border: 0, background: "#218653", color: "white", borderRadius: 12, padding: "10px 16px", display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer", fontWeight: 700 }}>
+                  <Play size={15} fill="currentColor" /> {tutorialPlaying ? "Pause demo" : "Play demo"}
+                </button>
+                <button onClick={() => { if (tutorialStep < 2) { setTutorialStep(tutorialStep + 1); setTutorialPlaying(false); } else { setSelectedTutorial(null); setTutorialPlaying(false); } }} style={{ border: 0, background: "#e8f3e8", color: "#176b43", borderRadius: 12, padding: "10px 16px", cursor: "pointer", fontWeight: 700 }}>
+                  {tutorialStep < 2 ? "Next step →" : "Finish"}
+                </button>
+              </div>
+            </div>
+            <p style={{ fontSize: 11, color: "#7b847c", marginBottom: 0, marginTop: 14 }}>Demo walkthrough only — it does not submit forms or change account data.</p>
+          </section>
+        </div>
+      )}
+      {active === "Learn Haldhara" && <CropCalendar />}
+{(active === "Sell Crop" || active === "Sell My Crop") && (
+        <div className="haldhara-crop-modal" role="dialog" aria-modal="true" aria-label="Sell your crop">
+          <div className="haldhara-crop-modal-panel">
+            <button
+              type="button"
+              className="haldhara-crop-modal-close"
+              onClick={() => setActive("Home")}
+              aria-label="Close crop form"
+            >
+              ×
+            </button>
+            <CropListingForm onCancel={() => setActive("Home")} />
+          </div>
+        </div>
+      )}
+      {active === "My Listings" && (
+        <div className="haldhara-listings-modal" role="dialog" aria-modal="true" aria-label="My crop listings">
+          <div className="haldhara-listings-modal-panel">
+            <button
+              type="button"
+              className="haldhara-listings-modal-close"
+              onClick={() => setActive("Home")}
+              aria-label="Close my listings"
+            >
+              ×
+            </button>
+            <MyCropListings />
+          </div>
+        </div>
+      )}
+      {active === "Find Buyers" && (
+        <div className="haldhara-buyer-marketplace-view" role="region" aria-label="Find Buyers marketplace">
+          <button
+            type="button"
+            className="haldhara-marketplace-back"
+            onClick={() => setActive("Home")}
+          >
+            ← Back to dashboard
+          </button>
+          <BuyerMarketplace />
+        </div>
+      )}
+      {active === "Buyer Requirements" && (
+        <div className="haldhara-buyer-requirements-view" role="region" aria-label="Buyer requirements">
+          <button
+            type="button"
+            className="haldhara-buyer-requirements-back"
+            onClick={() => setActive("Home")}
+          >
+            ← Back to dashboard
+          </button>
+          <BuyerRequirementForm />
+        </div>
+      )}
+      {active === "View Requirements" && (
+        <div className="haldhara-buyer-requirements-list-view">
+          <button
+            type="button"
+            className="haldhara-buyer-requirements-list-back"
+            onClick={() => setActive("Home")}
+          >
+            ← Back to dashboard
+          </button>
+          <BuyerRequirementsList />
+        </div>
+      )}
+      {active === "My Requirements" && (
+        <div className="haldhara-my-requirements-view">
+          <button
+            type="button"
+            className="haldhara-my-requirements-back"
+            onClick={() => setActive("Home")}
+          >
+            ← Back to dashboard
+          </button>
+          <MyRequirements />
+        </div>
+      )}
+      {active === "Book for Feast" && (
+  <div className="haldhara-feast-view">
+    <button type="button" onClick={() => setActive("Home")}>← Back to Home</button>
+    <BookForFeast />
+  </div>
+)}
+{active === "Smart Matching" && (
+        <div className="haldhara-smart-matching-view">
+          <button
+            type="button"
+            className="haldhara-smart-matching-back"
+            onClick={() => setActive("Home")}
+          >
+            ← Back to dashboard
+          </button>
+          <SmartMatching />
+        </div>
+      )}
+      {active === "My Offers" && (
+        <div className="haldhara-my-offers-view">
+          <button type="button" className="haldhara-my-offers-back" onClick={() => setActive("Home")}>
+            ← Back to dashboard
+          </button>
+          <MyOffers />
+        </div>
+      )}
+      {active === "Buyer Offers" && (
+        <div className="haldhara-buyer-offers-view">
+          <button type="button" className="haldhara-buyer-offers-back" onClick={() => setActive("Home")}>
+            ← Back to dashboard
+          </button>
+          <BuyerReceivedOffers />
+        </div>
+      )}
+</div>
+  );
+}
+
+export default Dashboard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -69,7 +69,7 @@ const tutorials = [
   { title: "Find Buyers", subtitle: "खरीदार ढूँढना", art: "🔎" },
   { title: "Book Transport", subtitle: "परिवहन बुक करना", art: "🚛" },
   { title: "Use Community", subtitle: "चर्चा मंच का उपयोग", art: "👨‍🌾" },
-  { title: "Get Expert Advice", subtitle: "विशेषज्ञ से सलाह", art: "🧑‍🌾" },
+  { title: "Get Expert Advice", subtitle: "Expert Advice", art: "🧑‍🌾" },
 ];
 
 import CropListingForm from "./features/crop-listings/CropListingForm";
@@ -122,6 +122,64 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [filter, setFilter] = useState("Highest Demand");
   const [search, setSearch] = useState("");
   const [language, setLanguage] = useState("English");
+  const [voiceTranslationText, setVoiceTranslationText] = useState("");
+  const [voiceTranslationBusy, setVoiceTranslationBusy] = useState(false);
+
+  // VOICE_TRANSLATE_BIDIRECTIONAL
+  const startVoiceTranslate = () => {
+    const SpeechAPI = (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+
+    if (!SpeechAPI) {
+      alert("Please use Chrome or Edge for voice recognition.");
+      return;
+    }
+
+    const toEnglish = language === "English";
+    const recognition = new SpeechAPI();
+    recognition.lang = toEnglish ? "hi-IN" : "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => setVoiceTranslationBusy(true);
+    recognition.onerror = () => {
+      setVoiceTranslationBusy(false);
+      alert("Voice recognition failed. Please try again.");
+    };
+
+    recognition.onresult = async (event: any) => {
+      const spoken = event.results?.[0]?.[0]?.transcript?.trim();
+      if (!spoken) {
+        setVoiceTranslationBusy(false);
+        return;
+      }
+
+      try {
+        const pair = toEnglish ? "hi|en" : "en|hi";
+        const url = "https://api.mymemory.translated.net/get?q=" +
+          encodeURIComponent(spoken) + "&langpair=" + pair;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Translation request failed");
+
+        const data = await response.json();
+        const translated = data?.responseData?.translatedText;
+        if (!translated) throw new Error("Empty translation");
+
+        setVoiceTranslationText(translated);
+        const utterance = new SpeechSynthesisUtterance(translated);
+        utterance.lang = toEnglish ? "en-US" : "hi-IN";
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+      } catch {
+        alert("Translation failed. Check your internet connection.");
+      } finally {
+        setVoiceTranslationBusy(false);
+      }
+    };
+
+    recognition.onend = () => setVoiceTranslationBusy(false);
+    recognition.start();
+  };
   const [menuOpen, setMenuOpen] = useState(false);
   const [region, setRegion] = useState("Arunachal Pradesh");
   const [selectedTutorial, setSelectedTutorial] = useState<{ title: string; subtitle: string; art: string } | null>(null);
@@ -195,24 +253,28 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
     return () => window.clearTimeout(timer);
   }, [tutorialPlaying, selectedTutorial, tutorialStep]);
 
-  const filteredCrops = crops
-    .filter(c =>
-      c.name.toLowerCase().includes(search.toLowerCase())
-    )
+  const filteredCrops = [...crops]
+    .filter(c => c.name.toLowerCase().includes(search.trim().toLowerCase()))
     .sort((a, b) => {
       const demandRank: Record<string, number> = {
         "Very High": 4,
         "High": 3,
         "Rising Fast": 2,
         "Moderate": 1,
+        "Low": 0,
       };
 
-      if (filter === "Rising Price" || filter === "For Next Season") {
+      if (filter === "Rising Price") {
         return b.change - a.change;
       }
 
-      if (filter === "Highest Demand" || filter === "Best Selling") {
+      if (filter === "Highest Demand") {
         return (demandRank[b.demand] ?? 0) - (demandRank[a.demand] ?? 0);
+      }
+
+      if (filter === "Best Selling") {
+        return (b.price * (demandRank[b.demand] ?? 0)) -
+               (a.price * (demandRank[a.demand] ?? 0));
       }
 
       if (filter === "Seasonal") {
@@ -226,6 +288,11 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
         return (seasonalRank[b.name] ?? 0) - (seasonalRank[a.name] ?? 0);
       }
 
+      if (filter === "For Next Season") {
+        return (b.change + (demandRank[b.demand] ?? 0)) -
+               (a.change + (demandRank[a.demand] ?? 0));
+      }
+
       return 0;
     });
 
@@ -233,9 +300,9 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
     <div className="dashboard">
       <aside className={"sidebar " + (menuOpen ? "sidebar-open" : "")}>
         <a className="logo-block" href="#home" onClick={() => setActive("Home")}>
-          <div className="logo-emblem"><Sprout size={43} /><span>⛰</span></div>
+          <div className="logo-emblem"><img src="/images/haldhara-logo.svg" alt="Haldhara logo" /></div>
           <strong>HALDHARA</strong>
-          <b className="hindi-tagline">हमारे किसान हमारा भविष्य</b>
+          <b className="hindi-tagline">Our Farmers, Our Future</b>
         </a>
         <nav className="side-nav">
           {nav.map(({ icon: Icon, label, badge, special }) => (
@@ -258,7 +325,10 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             {menuOpen ? <X /> : <Menu />}
           </button>
           <div className="top-spacer" />
-          <button className="top-pill" onClick={() => setLanguage(language === "English" ? "हिन्दी" : "English")}>
+          <button className="top-pill" type="button" onClick={startVoiceTranslate} disabled={voiceTranslationBusy} title="Speak to translate">
+  {voiceTranslationBusy ? "Listening..." : "🎙 Voice Translate"}
+</button>
+          <button className="top-pill" onClick={() => setLanguage(language === "English" ? "Hindi" : "English")}>
             <Globe size={19} /> {language} <ChevronDown size={15} />
           </button>
           <button className="notification" aria-label="Notifications"><Bell size={21}/><span>3</span></button>
@@ -279,14 +349,21 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 )}
 
         </header>
+        {voiceTranslationText && (
+          <section role="status" style={{ margin: "12px 0", padding: "14px", background: "#eaf5e9", color: "#234b35", borderRadius: 12 }}>
+            <b>Translation</b>
+            <p>{voiceTranslationText}</p>
+            <button type="button" onClick={() => setVoiceTranslationText("")}>Close</button>
+          </section>
+        )}
 
         <section className="scenic-banner">
           <div className="banner-foliage">🌿</div>
           <div className="banner-brand">
-            <div className="banner-emblem">👨‍🌾⛰️👩‍🌾</div>
+            <div className="banner-emblem"><img src="/images/haldhara-logo.svg" alt="Haldhara logo" /></div>
             <div>
               <h1>HALDHARA</h1>
-              <h2>हमारे किसान हमारा भविष्य</h2>
+              <h2>Our Farmers, Our Future</h2>
               <p>Connecting Arunachal's Farmers to Better Opportunities</p>
             </div>
           </div>
@@ -304,9 +381,29 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
         </section>
 
         <section className="search-area">
-          <form className="search-box" onSubmit={e => { e.preventDefault(); setActive("Trending Crops"); }}>
+          <form className="search-box" onSubmit={e => {
+            e.preventDefault();
+            const q = search.trim().toLowerCase();
+            if (!q) return;
+
+            if (/price|prices|rate|market|mandi/.test(q)) {
+              setActive("Market Price");
+            } else if (/buyer|buyers|sell|purchase|buy/.test(q)) {
+              setActive("Find Buyers");
+            } else if (/transport|truck|vehicle|delivery/.test(q)) {
+              setActive("Transport");
+            } else if (/weather|rain|forecast/.test(q)) {
+              setActive("Weather");
+            } else if (/community|discussion|farmer/.test(q)) {
+              setActive("Community");
+            } else if (/expert|advice|help|disease|pest|leaf/.test(q)) {
+              setActive("Expert Advice");
+            } else {
+              setActive("Trending Crops");
+            }
+          }}>
             <Search size={25}/>
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search crop, market, buyer, transport or question..." aria-label="Search Haldhara"/>
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search crops, prices, buyers, transport or farming questions..." aria-label="Search Haldhara"/>
             <button type="submit">Search</button>
           </form>
           <div className="crop-chips">
@@ -328,11 +425,11 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
         </section>
 
         <section className="shortcut-grid">
-          <button onClick={() => setActive("Market Price")}><span className="shortcut-icon green"><ChartNoAxesColumnIncreasing/></span><span><b>Market Price</b><small>आज का बाजार भाव</small></span></button>
-          <button onClick={() => setActive("Trending Crops")}><span className="shortcut-icon red"><Flame/></span><span><b>Trending Crops</b><small>अभी सबसे मांग वाली फसलें</small></span></button>
-          <button onClick={() => setActive("Community")}><span className="shortcut-icon blue"><MessageCircle/></span><span><b>Farmer Community</b><small>किसान चर्चा मंच</small></span></button>
-          <button onClick={() => setActive("Expert Advice")}><span className="shortcut-icon brown"><UserRound/></span><span><b>Expert Advice</b><small>विशेषज्ञ से सलाह</small></span></button>
-          <button onClick={() => setActive("Weather")}><span className="shortcut-icon violet"><CloudSun/></span><span><b>Weather & Alerts</b><small>मौसम और चेतावनी</small></span></button>
+          <button onClick={() => setActive("Market Price")}><span className="shortcut-icon green"><ChartNoAxesColumnIncreasing/></span><span><b>Market Price</b><small>Today's Market Prices</small></span></button>
+          <button onClick={() => setActive("Trending Crops")}><span className="shortcut-icon red"><Flame/></span><span><b>Trending Crops</b><small>Most In-Demand Crops</small></span></button>
+          <button onClick={() => setActive("Community")}><span className="shortcut-icon blue"><MessageCircle/></span><span><b>Farmer Community</b><small>Farmer Community</small></span></button>
+          <button onClick={() => setActive("Expert Advice")}><span className="shortcut-icon brown"><UserRound/></span><span><b>Expert Advice</b><small>Expert Advice</small></span></button>
+          <button onClick={() => setActive("Weather")}><span className="shortcut-icon violet"><CloudSun/></span><span><b>Weather & Alerts</b><small>Weather and Alerts</small></span></button>
         </section>
 
         <section className="market-layout">
@@ -427,13 +524,129 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           </aside>
         </section>
 
-        <footer className="dashboard-footer"><span><Sprout size={17}/> HALDHARA · हमारे किसान हमारा भविष्य</span><span>Rooted in the land. Growing together.</span></footer>
+        <footer className="dashboard-footer"><span><Sprout size={17}/> HALDHARA · Our Farmers, Our Future</span><span>Rooted in the land. Growing together.</span></footer>
       </main>) }
           {active === "Transport" && (
   <section style={{padding:"24px",margin:"16px",background:"#fffdf5",borderRadius:"16px",color:"#234b35"}}>
     <button onClick={() => setActive("Home")}>← Back to Home</button>
     <h2>🚚 Shared Farm Transport</h2>
     <p>Demo transport board — confirm availability and prices directly with the provider.</p>
+
+    <form
+      onSubmit={e => {
+        e.preventDefault();
+        const form = e.currentTarget;
+        const data = new FormData(form);
+        const request = {
+          id: Date.now(),
+          pickup: String(data.get("pickup") || ""),
+          destination: String(data.get("destination") || ""),
+          crop: String(data.get("crop") || ""),
+          quantityKg: Number(data.get("quantityKg")),
+          vehicle: String(data.get("vehicle") || ""),
+          date: String(data.get("date") || ""),
+          budget: Number(data.get("budget") || 0),
+          contact: String(data.get("contact") || ""),
+          createdAt: new Date().toISOString()
+        };
+
+        const previous = JSON.parse(
+          localStorage.getItem("haldharaTransportRequests") || "[]"
+        );
+
+        localStorage.setItem(
+          "haldharaTransportRequests",
+          JSON.stringify([request, ...previous])
+        );
+
+        alert("Transport request saved on this device.");
+        form.reset();
+      }}
+      style={{
+        margin: "20px 0",
+        padding: "22px",
+        background: "#ffffff",
+        border: "1px solid #e5e7dc",
+        borderRadius: "16px",
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+        gap: "16px"
+      }}
+    >
+      <h3 style={{gridColumn: "1 / -1", margin: 0}}>Share a Transport Request</h3>
+
+      <label>Pickup Location
+        <input name="pickup" required placeholder="e.g. Ziro"
+          style={{display:"block",width:"100%",padding:"12px",marginTop:"6px",boxSizing:"border-box"}} />
+      </label>
+
+      <label>Destination
+        <input name="destination" required placeholder="e.g. Itanagar"
+          style={{display:"block",width:"100%",padding:"12px",marginTop:"6px",boxSizing:"border-box"}} />
+      </label>
+
+      <label>Crop
+        <select name="crop" required defaultValue=""
+          style={{display:"block",width:"100%",padding:"12px",marginTop:"6px",boxSizing:"border-box"}}>
+          <option value="" disabled>Select crop</option>
+          <option>Ginger</option>
+          <option>Potato</option>
+          <option>Pineapple</option>
+          <option>Orange</option>
+          <option>Kiwi</option>
+          <option>Turmeric</option>
+          <option>Rice</option>
+          <option>Maize</option>
+          <option>Other</option>
+        </select>
+      </label>
+
+      <label>Quantity (kg)
+        <input name="quantityKg" type="number" min="1" required placeholder="e.g. 200"
+          style={{display:"block",width:"100%",padding:"12px",marginTop:"6px",boxSizing:"border-box"}} />
+      </label>
+
+      <label>Vehicle Type
+        <select name="vehicle" required defaultValue=""
+          style={{display:"block",width:"100%",padding:"12px",marginTop:"6px",boxSizing:"border-box"}}>
+          <option value="" disabled>Select vehicle</option>
+          <option>Pickup Truck</option>
+          <option>Mini Truck</option>
+          <option>Small Goods Vehicle</option>
+          <option>Large Truck</option>
+          <option>Shared Transport</option>
+        </select>
+      </label>
+
+      <label>Required Date
+        <input name="date" type="date" required min={new Date().toISOString().slice(0,10)}
+          style={{display:"block",width:"100%",padding:"12px",marginTop:"6px",boxSizing:"border-box"}} />
+      </label>
+
+      <label>Estimated Budget (INR)
+        <input name="budget" type="number" min="0" placeholder="Optional"
+          style={{display:"block",width:"100%",padding:"12px",marginTop:"6px",boxSizing:"border-box"}} />
+      </label>
+
+      <label>Contact Number
+        <input name="contact" type="tel" required pattern="[0-9+\-\s]{7,18}" placeholder="Enter contact number"
+          style={{display:"block",width:"100%",padding:"12px",marginTop:"6px",boxSizing:"border-box"}} />
+      </label>
+
+      <button type="submit"
+        style={{
+          gridColumn:"1 / -1",
+          padding:"14px",
+          background:"#754326",
+          color:"#ffffff",
+          border:0,
+          borderRadius:"10px",
+          cursor:"pointer",
+          fontWeight:700
+        }}>
+        Submit Transport Request
+      </button>
+    </form>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:"16px"}}>
       {[
         ["Itanagar → Naharlagun","Pickup truck","Shared load available","₹800 / trip (illustrative)"],
@@ -453,8 +666,8 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
     <h2>🧑‍🌾 Farmer Community</h2>
     <p>Demo discussions. Verify farming advice with a qualified local expert.</p>
     {[
-      ["🫚 Ginger","Leaves par daag dikh rahe hain — local agriculture expert se salah lein.","12 replies"],
-      ["🥔 Potato","Storage aur harvesting tips share karein.","8 replies"],
+      ["🫚 Ginger","Leaf spots detected — consult a local agricultural expert.","12 replies"],
+      ["🥔 Potato","Share storage and harvesting tips.","8 replies"],
       ["🍍 Pineapple","Soil preparation aur fertilizer ke baare mein discussion.","5 replies"]
     ].map(([topic,body,replies]) => <article key={topic} style={{padding:"16px",marginTop:"12px",background:"#fff",border:"1px solid #dce7dc",borderRadius:"12px"}}>
       <h3>{topic}</h3><p>{body}</p><small>{replies} · Sample discussion</small>

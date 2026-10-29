@@ -178,7 +178,7 @@ function App() {
           </form>
           <p className="auth-footnote"><ShieldCheck size={15}/> Your account is protected by phone verification and secure sign-in.</p>
         </div>
-        <footer className="auth-footer">HALDHARA · हमारे किसान हमारा भविष्य</footer>
+        <footer className="auth-footer">HALDHARA · Our Farmers, Our Future</footer>
       </section>
     </main>
   );

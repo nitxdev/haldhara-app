@@ -1,5 +1,5 @@
-﻿import { useEffect, useState } from "react";
-import { Sprout, Phone, LockKeyhole, UserRound, ArrowRight, ShieldCheck } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Sprout, Phone, LockKeyhole, UserRound, ArrowRight, ShieldCheck, ShoppingCart } from "lucide-react";
 import Dashboard from "./Dashboard";
 import "./Auth.css";
 
@@ -7,6 +7,7 @@ const API = "http://localhost:5001/api";
 
 type User = { id: string; name: string; phone: string; role: string };
 type AuthResponse = { success: boolean; message?: string; data?: { token?: string; user?: User } };
+type AccountRole = "farmer" | "buyer";
 
 function App() {
   const [token, setToken] = useState(() => localStorage.getItem("haldhara_token") || "");
@@ -17,6 +18,7 @@ function App() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
+  const [role, setRole] = useState<AccountRole>("farmer");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -70,7 +72,7 @@ function App() {
         setMessage("OTP requested. Check the delivery method configured for your number.");
       } else {
         await callApi("otp/verify", { phone, code });
-        const result = await callApi("register", { name, phone, password, role: "farmer" });
+        const result = await callApi("register", { name, phone, password, role });
         if (!result.data?.token) throw new Error("Registration succeeded but no login token was returned.");
         localStorage.setItem("haldhara_token", result.data.token);
         setToken(result.data.token);
@@ -120,21 +122,37 @@ function App() {
           <span className="auth-eyebrow">{mode === "login" ? "WELCOME BACK" : "JOIN THE COMMUNITY"}</span>
           <h2>{mode === "login" ? "Welcome back!" : stage === "otp" ? "Verify your phone" : "Create your account"}</h2>
           <p className="auth-subtitle">
-            {mode === "login" ? "Sign in to access your farmer dashboard." :
+            {mode === "login" ? "Sign in to access your Haldhara account." :
              stage === "otp" ? "Enter the OTP you received on your phone." :
-             "Create a farmer account to get started with Haldhara."}
+             "Choose whether you want to sell crops or buy from farmers."}
           </p>
 
           <div className="auth-tabs">
-            <button className={mode === "login" ? "selected" : ""} onClick={() => { setMode("login"); setStage("details"); setMessage(""); }}>Log in</button>
-            <button className={mode === "register" ? "selected" : ""} onClick={() => { setMode("register"); setStage("details"); setMessage(""); }}>Create account</button>
+            <button type="button" className={mode === "login" ? "selected" : ""} onClick={() => { setMode("login"); setStage("details"); setMessage(""); }}>Log in</button>
+            <button type="button" className={mode === "register" ? "selected" : ""} onClick={() => { setMode("register"); setStage("details"); setMessage(""); }}>Create account</button>
           </div>
 
           <form onSubmit={submit} className="auth-form">
             {mode === "register" && stage === "details" && (
-              <label>Full name
-                <span className="auth-input"><UserRound size={18}/><input required value={name} onChange={e => setName(e.target.value)} placeholder="Enter your name" autoComplete="name"/></span>
-              </label>
+              <>
+                <label>Full name
+                  <span className="auth-input"><UserRound size={18}/><input required value={name} onChange={e => setName(e.target.value)} placeholder="Enter your name" autoComplete="name"/></span>
+                </label>
+                <label>Account type
+                  <span className="auth-input">
+                    {role === "farmer" ? <Sprout size={18}/> : <ShoppingCart size={18}/>}
+                    <select
+                      value={role}
+                      onChange={e => setRole(e.target.value as AccountRole)}
+                      aria-label="Account type"
+                      style={{ width: "100%", border: 0, outline: "none", background: "transparent", color: "#254b38", font: "inherit", padding: "2px 0" }}
+                    >
+                      <option value="farmer">Farmer — sell crops</option>
+                      <option value="buyer">Buyer — buy crops</option>
+                    </select>
+                  </span>
+                </label>
+              </>
             )}
             <label>Phone number
               <span className="auth-input"><Phone size={18}/><input required value={phone} onChange={e => setPhone(e.target.value)} placeholder="+91XXXXXXXXXX" autoComplete="tel" disabled={stage === "otp" && mode === "register"}/></span>
@@ -167,4 +185,3 @@ function App() {
 }
 
 export default App;
-
